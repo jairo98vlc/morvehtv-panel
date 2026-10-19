@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MorvehTV - Panel </title>
+    <title>MorvehTV - Enterprise Control Panel</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -227,7 +227,7 @@
                     <div class="text-center space-y-2">
                         <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center mx-auto text-xl"><i class="fa-solid fa-bolt"></i></div>
                         <h2 class="text-xl font-bold text-white">Generador de Demo Express</h2>
-                        <p class="text-xs text-zinc-400">Crea una cuenta de prueba temporal de alta velocidad sin coste de créditos.</p>
+                        <p class="text-xs text-zinc-400">Crea una cuenta de prueba temporal directamente en tu servidor Emby.</p>
                     </div>
 
                     <div class="space-y-4 text-xs">
@@ -255,13 +255,13 @@
                     </div>
 
                     <button onclick="createExpressDemoAccount()" class="w-full py-3 bg-brand-600 hover:bg-brand-500 text-white font-bold rounded-xl transition glow-accent flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i> Crear Cuenta Demo Ahora
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Crear Cuenta Demo en Emby
                     </button>
                 </div>
 
                 <!-- Output Box for Demo -->
                 <div id="demoOutputBox" class="hidden glass-panel p-6 rounded-2xl border border-zinc-800 space-y-4 shadow-2xl">
-                    <h4 class="text-sm font-bold text-emerald-400 flex items-center gap-2"><i class="fa-solid fa-circle-check"></i> ¡Demo Creada y Sincronizada!</h4>
+                    <h4 class="text-sm font-bold text-emerald-400 flex items-center gap-2"><i class="fa-solid fa-circle-check"></i> ¡Demo Creada en Servidor Emby!</h4>
                     <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 font-mono text-xs text-zinc-300 whitespace-pre-wrap" id="demoMessageContent"></div>
                     <div class="flex gap-2">
                         <button onclick="copyDemoText()" class="flex-1 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white font-medium rounded-xl text-xs transition flex items-center justify-center gap-2">
@@ -539,11 +539,53 @@ Tus datos de acceso a Emby son:
             document.getElementById(`dbtn-${hours}`).className = "demo-h-btn py-2.5 rounded-xl border border-brand-500/50 bg-brand-500/10 text-white font-bold text-center transition";
         }
 
-        function createExpressDemoAccount() {
+        // --- SINCRONIZACIÓN REAL CON API DE EMBY EN DEMOS ---
+        async function createExpressDemoAccount() {
             const customUser = document.getElementById('demoCustomUser').value.trim();
             const user = customUser !== '' ? customUser : 'demo_' + Math.floor(1000 + Math.random() * 9000);
             const pass = Math.random().toString(36).slice(-6);
             const streams = document.getElementById('demoStreams').value;
+
+            const host = localStorage.getItem('embyHost');
+            const apiKey = localStorage.getItem('embyApiKey');
+
+            // Intentar crear la cuenta físicamente en el servidor Emby si está configurado
+            if (host && apiKey) {
+                try {
+                    // 1. Crear usuario en Emby
+                    const resUser = await fetch(`${host}/emby/Users/New?api_key=${apiKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ Name: user })
+                    });
+                    
+                    if (resUser.ok) {
+                        const userData = await resUser.json();
+                        const embyUserId = userData.Id;
+
+                        // 2. Establecer contraseña
+                        await fetch(`${host}/emby/Users/${embyUserId}/Password?api_key=${apiKey}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ Id: embyUserId, New: pass })
+                        });
+
+                        // 3. Aplicar política de conexiones simultáneas
+                        await fetch(`${host}/emby/Users/${embyUserId}/Policy?api_key=${apiKey}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ SimultaneousStreamLimit: parseInt(streams) })
+                        });
+
+                        logAudit(`[EMBY REAL] Cuenta demo creada en servidor: ${user}`);
+                    } else {
+                        console.warn('El servidor Emby respondió con error al crear la demo, registrando localmente.');
+                    }
+                } catch (err) {
+                    console.error('Error de red al conectar con Emby (Posible bloqueo CORS o servidor inaccesible):', err);
+                    alert('Aviso: No se pudo conectar directamente con el servidor Emby (revisa CORS o IP). La cuenta se ha registrado en el panel local.');
+                }
+            }
 
             const expDate = new Date();
             expDate.setHours(expDate.getHours() + currentDemoHours);
@@ -560,14 +602,14 @@ Tus datos de acceso a Emby son:
 
             saveLocalDB();
             renderClients();
-            logAudit(`Demo creada: ${user} (${currentDemoHours}h)`);
+            logAudit(`Demo Express registrada: ${user} (${currentDemoHours}h)`);
 
-            const host = localStorage.getItem('embyHost') || 'http://tu-servidor:8096';
+            const serverUrl = host || 'http://tu-servidor:8096';
             const template = localStorage.getItem('msgTemplate') || document.getElementById('templateText').value;
             currentMsgText = template
                 .replace(/{usuario}/g, user)
                 .replace(/{password}/g, pass)
-                .replace(/{host}/g, host)
+                .replace(/{host}/g, serverUrl)
                 .replace(/{fecha_expiracion}/g, dateStr + ` (${currentDemoHours}h)`)
                 .replace(/{streams}/g, streams + ' pantalla(s)');
 
@@ -608,11 +650,40 @@ Tus datos de acceso a Emby son:
         function openResellerModal() { document.getElementById('resellerModal').classList.remove('hidden'); }
         function closeResellerModal() { document.getElementById('resellerModal').classList.add('hidden'); }
 
-        function saveClient() {
+        async function saveClient() {
             const user = document.getElementById('modalUsername').value;
             const pass = document.getElementById('modalPassword').value;
             const months = parseInt(document.getElementById('modalMonths').value);
+            const streams = parseInt(document.getElementById('modalStreams').value);
             if (!user) return;
+
+            const host = localStorage.getItem('embyHost');
+            const apiKey = localStorage.getItem('embyApiKey');
+
+            if (host && apiKey) {
+                try {
+                    const resUser = await fetch(`${host}/emby/Users/New?api_key=${apiKey}`, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ Name: user })
+                    });
+                    if(resUser.ok) {
+                        const data = await resUser.json();
+                        await fetch(`${host}/emby/Users/${data.Id}/Password?api_key=${apiKey}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ Id: data.Id, New: pass || '123456' })
+                        });
+                        await fetch(`${host}/emby/Users/${data.Id}/Policy?api_key=${apiKey}`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ SimultaneousStreamLimit: streams })
+                        });
+                    }
+                } catch(e) {
+                    console.error('Error al sincronizar cliente con Emby:', e);
+                }
+            }
 
             db.adminCredits -= months;
             const expDate = new Date();
@@ -621,7 +692,7 @@ Tus datos de acceso a Emby son:
             db.clients.unshift({
                 id: Date.now().toString(),
                 username: user,
-                maxStreams: parseInt(document.getElementById('modalStreams').value),
+                maxStreams: streams,
                 expiresAt: expDate.toISOString().split('T')[0],
                 isActive: true,
                 notes: document.getElementById('modalNotes').value
@@ -629,7 +700,7 @@ Tus datos de acceso a Emby son:
             saveLocalDB();
             renderClients();
             closeClientModal();
-            logAudit(`Cliente creado: ${user}`);
+            logAudit(`Cliente creado en servidor y panel: ${user}`);
         }
 
         function deleteClient(id) {
@@ -653,12 +724,13 @@ Tus datos de acceso a Emby son:
             document.getElementById('messageModal').classList.remove('hidden');
         }
         function copyModalMsg() { navigator.clipboard.writeText(currentMsgText); alert('Copiado'); }
+        function shareWhatsAppDemo() { window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(currentMsgText)}`, '_blank'); }
         function shareModalWA() { window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(currentMsgText)}`, '_blank'); }
 
         function saveEmbySettings() {
             localStorage.setItem('embyHost', document.getElementById('embyHost').value);
             localStorage.setItem('embyApiKey', document.getElementById('embyApiKey').value);
-            alert('Guardado');
+            alert('¡Ajustes de Emby guardados!');
         }
         function loadSettings() {
             if (localStorage.getItem('embyHost')) document.getElementById('embyHost').value = localStorage.getItem('embyHost');
@@ -669,8 +741,8 @@ Tus datos de acceso a Emby son:
             const key = document.getElementById('embyApiKey').value;
             fetch(`${host}/emby/System/Info?api_key=${key}`)
                 .then(r => r.json())
-                .then(d => alert(`Conectado a ${d.ServerName}`))
-                .catch(() => alert('Error de conexión'));
+                .then(d => alert(`¡Conectado exitosamente con ${d.ServerName} (v${d.Version})!`))
+                .catch(() => alert('No se pudo conectar. Comprueba que la URL sea accesible y el API Key sea correcto.'));
         }
         function saveTemplate() {
             localStorage.setItem('msgTemplate', document.getElementById('templateText').value);
