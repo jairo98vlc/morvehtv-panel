@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MorvehTV - Panel de Gestión Emby & Resellers</title>
+    <title>MorvehTV - Panel </title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -34,8 +34,8 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body { background-color: #09090b; color: #f4f4f5; font-family: system-ui, -apple-system, sans-serif; }
-        .glass-panel { background: rgba(18, 18, 21, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255,255,255,0.08); }
-        .glow-accent { box-shadow: 0 0 25px rgba(139, 92, 246, 0.2); }
+        .glass-panel { background: rgba(18, 18, 21, 0.85); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); }
+        .glow-accent { box-shadow: 0 0 30px rgba(139, 92, 246, 0.22); }
     </style>
 </head>
 <body class="min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white">
@@ -58,7 +58,7 @@
             </div>
 
             <!-- Reseller Balance -->
-            <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs">
+            <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs shadow-inner">
                 <i class="fa-solid fa-coins text-amber-400"></i>
                 <span class="text-zinc-400">Créditos:</span>
                 <span id="adminCredits" class="font-bold text-white text-sm">250</span>
@@ -98,8 +98,14 @@
                 </div>
 
                 <div>
-                    <p class="text-[11px] font-bold uppercase tracking-wider text-zinc-500 px-3 mb-2">Sistema & Ajustes</p>
+                    <p class="text-[11px] font-bold uppercase tracking-wider text-zinc-500 px-3 mb-2">Herramientas & Red</p>
                     <nav class="space-y-1">
+                        <button onclick="switchTab('bulk')" id="nav-bulk" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-zinc-400 hover:text-white hover:bg-zinc-800/60">
+                            <i class="fa-solid fa-layer-group w-5"></i> Generador Masivo
+                        </button>
+                        <button onclick="switchTab('logs')" id="nav-logs" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-zinc-400 hover:text-white hover:bg-zinc-800/60">
+                            <i class="fa-solid fa-clock-rotate-left w-5"></i> Auditoría / Logs
+                        </button>
                         <button onclick="switchTab('templates')" id="nav-templates" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-zinc-400 hover:text-white hover:bg-zinc-800/60">
                             <i class="fa-solid fa-message w-5"></i> Plantilla Mensajes
                         </button>
@@ -115,7 +121,7 @@
                     <i class="fa-solid fa-shield-halved text-brand-400 text-xs"></i>
                     <p class="text-xs font-semibold text-zinc-300">MorvehTV Engine</p>
                 </div>
-                <p class="text-[11px] text-zinc-500">Sincronización de nodos activa.</p>
+                <p class="text-[11px] text-zinc-500">Nodo Principal En Línea</p>
             </div>
         </aside>
 
@@ -133,7 +139,7 @@
                             </div>
                             <div class="p-2.5 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20"><i class="fa-solid fa-user-check"></i></div>
                         </div>
-                        <p class="text-[11px] text-emerald-400 mt-3 flex items-center gap-1"><i class="fa-solid fa-arrow-trend-up"></i> Actualizado en tiempo real</p>
+                        <p class="text-[11px] text-emerald-400 mt-3 flex items-center gap-1"><i class="fa-solid fa-arrow-trend-up"></i> Sincronización en tiempo real</p>
                     </div>
 
                     <div class="glass-panel p-5 rounded-2xl border border-zinc-800">
@@ -155,7 +161,7 @@
                             </div>
                             <div class="p-2.5 bg-brand-500/10 text-brand-400 rounded-xl border border-brand-500/20"><i class="fa-solid fa-user-tie"></i></div>
                         </div>
-                        <p class="text-[11px] text-brand-400 mt-3">Red de distribución</p>
+                        <p class="text-[11px] text-brand-400 mt-3">Red comercial activa</p>
                     </div>
 
                     <div class="glass-panel p-5 rounded-2xl border border-zinc-800">
@@ -166,15 +172,15 @@
                             </div>
                             <div class="p-2.5 bg-indigo-500/10 text-indigo-400 rounded-xl border border-indigo-500/20"><i class="fa-solid fa-play"></i></div>
                         </div>
-                        <p class="text-[11px] text-zinc-400 mt-3">Direct Play: 85%</p>
+                        <p class="text-[11px] text-zinc-400 mt-3">Direct Play: 88%</p>
                     </div>
                 </div>
 
                 <!-- Live Stream Chart -->
                 <div class="glass-panel p-5 rounded-2xl border border-zinc-800">
                     <div class="flex items-center justify-between mb-4">
-                        <h3 class="font-bold text-zinc-200 flex items-center gap-2"><i class="fa-solid fa-chart-line text-brand-400"></i> Rendimiento de Conexiones (24h)</h3>
-                        <span class="text-xs text-zinc-500">Monitoreo de Cluster Emby</span>
+                        <h3 class="font-bold text-zinc-200 flex items-center gap-2"><i class="fa-solid fa-chart-line text-brand-400"></i> Rendimiento de Conexiones Simultáneas (24h)</h3>
+                        <span class="text-xs text-zinc-500">Cluster Emby Server</span>
                     </div>
                     <div class="h-64">
                         <canvas id="streamChart"></canvas>
@@ -194,7 +200,7 @@
                     </button>
                 </div>
 
-                <div class="glass-panel rounded-2xl border border-zinc-800 overflow-hidden">
+                <div class="glass-panel rounded-2xl border border-zinc-800 overflow-hidden shadow-2xl">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-sm text-zinc-400">
                             <thead class="bg-zinc-900/80 text-zinc-300 text-xs uppercase font-semibold border-b border-zinc-800">
@@ -215,42 +221,54 @@
                 </div>
             </div>
 
-            <!-- TAB 3: DEMO EXPRESS -->
-            <div id="tab-demo" class="space-y-6 hidden max-w-2xl mx-auto">
-                <div class="glass-panel p-6 rounded-2xl border border-zinc-800 text-center space-y-4">
-                    <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center mx-auto text-xl"><i class="fa-solid fa-bolt"></i></div>
-                    <h2 class="text-xl font-bold text-white">Generar Demo Express (1-Click)</h2>
-                    <p class="text-xs text-zinc-400">Crea una cuenta temporal automática en Emby con duración exacta (0 créditos consumidos).</p>
-
-                    <div class="grid grid-cols-3 gap-3 text-left pt-2">
-                        <button onclick="setDemoDuration(2)" id="demo-2" class="demo-btn p-3 rounded-xl border border-brand-500/50 bg-brand-500/10 text-white text-center">
-                            <p class="font-bold text-sm">2 Horas</p>
-                            <p class="text-[10px] text-zinc-400">Prueba Rápida</p>
-                        </button>
-                        <button onclick="setDemoDuration(4)" id="demo-4" class="demo-btn p-3 rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700 text-center">
-                            <p class="font-bold text-sm">4 Horas</p>
-                            <p class="text-[10px] text-zinc-400">Estándar</p>
-                        </button>
-                        <button onclick="setDemoDuration(24)" id="demo-24" class="demo-btn p-3 rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700 text-center">
-                            <p class="font-bold text-sm">24 Horas</p>
-                            <p class="text-[10px] text-zinc-400">Día Completo</p>
-                        </button>
+            <!-- TAB 3: DEMO EXPRESS ELITE -->
+            <div id="tab-demo" class="space-y-6 hidden max-w-xl mx-auto">
+                <div class="glass-panel p-8 rounded-2xl border border-zinc-800 space-y-6 shadow-2xl">
+                    <div class="text-center space-y-2">
+                        <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center mx-auto text-xl"><i class="fa-solid fa-bolt"></i></div>
+                        <h2 class="text-xl font-bold text-white">Generador de Demo Express</h2>
+                        <p class="text-xs text-zinc-400">Crea una cuenta de prueba temporal de alta velocidad sin coste de créditos.</p>
                     </div>
 
-                    <button onclick="generateExpressDemo()" class="w-full py-3 bg-brand-600 hover:bg-brand-500 text-white font-bold rounded-xl transition glow-accent flex items-center justify-center gap-2">
-                        <i class="fa-solid fa-wand-magic-sparkles"></i> Generar Demo e Inscribir en Sistema
+                    <div class="space-y-4 text-xs">
+                        <div>
+                            <label class="font-semibold text-zinc-300 block mb-1">Nombre de Usuario (Opcional)</label>
+                            <input type="text" id="demoCustomUser" placeholder="Dejar en blanco para autogenerar" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2.5 text-zinc-200 focus:outline-none focus:border-brand-500">
+                        </div>
+
+                        <div>
+                            <label class="font-semibold text-zinc-300 block mb-1">Duración de la Demo</label>
+                            <div class="grid grid-cols-3 gap-2">
+                                <button onclick="setDemoHours(2)" id="dbtn-2" class="demo-h-btn py-2.5 rounded-xl border border-brand-500/50 bg-brand-500/10 text-white font-bold text-center transition">2 Horas</button>
+                                <button onclick="setDemoHours(4)" id="dbtn-4" class="demo-h-btn py-2.5 rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700 font-bold text-center transition">4 Horas</button>
+                                <button onclick="setDemoHours(24)" id="dbtn-24" class="demo-h-btn py-2.5 rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700 font-bold text-center transition">24 Horas</button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="font-semibold text-zinc-300 block mb-1">Pantallas Simultáneas</label>
+                            <select id="demoStreams" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2.5 text-zinc-200 focus:outline-none focus:border-brand-500">
+                                <option value="1">1 Pantalla</option>
+                                <option value="2">2 Pantallas</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <button onclick="createExpressDemoAccount()" class="w-full py-3 bg-brand-600 hover:bg-brand-500 text-white font-bold rounded-xl transition glow-accent flex items-center justify-center gap-2">
+                        <i class="fa-solid fa-wand-magic-sparkles"></i> Crear Cuenta Demo Ahora
                     </button>
                 </div>
 
-                <div id="demoOutputBox" class="hidden glass-panel p-5 rounded-2xl border border-zinc-800 space-y-4">
+                <!-- Output Box for Demo -->
+                <div id="demoOutputBox" class="hidden glass-panel p-6 rounded-2xl border border-zinc-800 space-y-4 shadow-2xl">
                     <h4 class="text-sm font-bold text-emerald-400 flex items-center gap-2"><i class="fa-solid fa-circle-check"></i> ¡Demo Creada y Sincronizada!</h4>
                     <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 font-mono text-xs text-zinc-300 whitespace-pre-wrap" id="demoMessageContent"></div>
                     <div class="flex gap-2">
                         <button onclick="copyDemoText()" class="flex-1 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white font-medium rounded-xl text-xs transition flex items-center justify-center gap-2">
-                            <i class="fa-solid fa-copy"></i> Copiar Mensaje
+                            <i class="fa-solid fa-copy"></i> Copiar Datos
                         </button>
                         <button onclick="shareWhatsAppDemo()" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-xl text-xs transition flex items-center justify-center gap-2">
-                            <i class="fa-brands fa-whatsapp text-sm"></i> Enviar a WhatsApp
+                            <i class="fa-brands fa-whatsapp text-sm"></i> WhatsApp
                         </button>
                     </div>
                 </div>
@@ -268,59 +286,79 @@
                 </div>
             </div>
 
-            <!-- TAB 5: PLANTILLAS -->
-            <div id="tab-templates" class="space-y-4 hidden max-w-3xl mx-auto">
-                <div class="glass-panel p-6 rounded-2xl border border-zinc-800 space-y-4">
-                    <h3 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-pen-to-square text-brand-400"></i> Plantilla de Mensajes Automatizada</h3>
-                    <p class="text-xs text-zinc-400">Personaliza el mensaje que reciben tus clientes al generar accesos o renovaciones.</p>
+            <!-- TAB 5: BULK GENERATOR -->
+            <div id="tab-bulk" class="space-y-4 hidden max-w-xl mx-auto">
+                <div class="glass-panel p-6 rounded-2xl border border-zinc-800 space-y-4 shadow-2xl">
+                    <h3 class="text-base font-bold text-white flex items-center gap-2"><i class="fa-solid fa-layer-group text-brand-400"></i> Generador Masivo de Cuentas</h3>
+                    <p class="text-xs text-zinc-400">Genera múltiples accesos de Emby simultáneamente con nomenclatura automatizada.</p>
                     
-                    <div class="space-y-2">
-                        <label class="text-xs font-semibold text-zinc-300">Variables permitidas: <span class="text-brand-400 font-mono">{usuario}, {password}, {host}, {fecha_expiracion}, {streams}</span></label>
-                        <textarea id="templateText" rows="8" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-4 text-xs font-mono text-zinc-200 focus:outline-none focus:border-brand-500">¡Hola {usuario}! Bienvenido a MorvehTV 🚀
+                    <div class="space-y-3 text-xs">
+                        <div>
+                            <label class="font-semibold text-zinc-300 block mb-1">Prefijo de Usuario</label>
+                            <input type="text" id="bulkPrefix" value="cliente_" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2 text-zinc-200 focus:outline-none">
+                        </div>
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <label class="font-semibold text-zinc-300 block mb-1">Cantidad</label>
+                                <input type="number" id="bulkCount" value="5" min="1" max="20" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2 text-zinc-200">
+                            </div>
+                            <div>
+                                <label class="font-semibold text-zinc-300 block mb-1">Validez</label>
+                                <select id="bulkMonths" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-200">
+                                    <option value="1">1 Mes</option>
+                                    <option value="3">3 Meses</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="generateBulkAccounts()" class="w-full py-2.5 bg-brand-600 hover:bg-brand-500 text-white font-bold rounded-xl transition text-xs shadow-lg glow-accent">Ejecutar Lote Masivo</button>
+                </div>
+            </div>
+
+            <!-- TAB 6: AUDIT LOGS -->
+            <div id="tab-logs" class="space-y-4 hidden max-w-3xl mx-auto">
+                <div class="glass-panel p-6 rounded-2xl border border-zinc-800 space-y-4 shadow-2xl">
+                    <h3 class="text-base font-bold text-white flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left text-brand-400"></i> Registro de Auditoría y Trazabilidad</h3>
+                    <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 font-mono text-xs text-zinc-400 space-y-2 max-h-96 overflow-y-auto" id="auditLogsContainer">
+                        <p class="text-zinc-600">[Sistema Iniciado] Módulos élite MorvehTV cargados correctamente.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 7: PLANTILLAS -->
+            <div id="tab-templates" class="space-y-4 hidden max-w-3xl mx-auto">
+                <div class="glass-panel p-6 rounded-2xl border border-zinc-800 space-y-4 shadow-2xl">
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-pen-to-square text-brand-400"></i> Plantilla de Mensajes Automatizada</h3>
+                    <textarea id="templateText" rows="7" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-4 text-xs font-mono text-zinc-200 focus:outline-none">¡Hola {usuario}! Bienvenido a MorvehTV 🚀
 
 Tus datos de acceso a Emby son:
 🌐 Servidor: {host}
 👤 Usuario: {usuario}
 🔑 Contraseña: {password}
-📱 Pantallas: {streams} simultánea(s)
+📱 Pantallas: {streams}
 📅 Válido hasta: {fecha_expiracion}
 
-Descarga la app oficial de Emby en tu dispositivo e ingresa tus datos. ¡Que lo disfrutes!</textarea>
-                    </div>
-
-                    <button onclick="saveTemplate()" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-500 text-white font-semibold text-xs rounded-xl transition shadow-lg glow-accent">Guardar Plantilla</button>
+¡Que lo disfrutes!</textarea>
+                    <button onclick="saveTemplate()" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-500 text-white font-semibold text-xs rounded-xl transition">Guardar Plantilla</button>
                 </div>
             </div>
 
-            <!-- TAB 6: SETTINGS API -->
+            <!-- TAB 8: SETTINGS API -->
             <div id="tab-settings" class="space-y-6 hidden max-w-3xl mx-auto">
-                <div class="glass-panel p-6 rounded-2xl border border-zinc-800 space-y-5">
-                    <div class="flex items-center gap-3 border-b border-zinc-800 pb-4">
-                        <div class="p-3 bg-brand-500/10 text-brand-400 rounded-xl border border-brand-500/20"><i class="fa-solid fa-server text-lg"></i></div>
+                <div class="glass-panel p-6 rounded-2xl border border-zinc-800 space-y-5 shadow-2xl">
+                    <h3 class="text-base font-bold text-white flex items-center gap-2"><i class="fa-solid fa-server text-brand-400"></i> Configuración API Servidor Emby</h3>
+                    <div class="space-y-4 text-xs">
                         <div>
-                            <h3 class="text-base font-bold text-white">Configuración API Servidor Emby</h3>
-                            <p class="text-xs text-zinc-400">Conecta tu servidor físico para control en tiempo real y provisión automática de cuentas.</p>
+                            <label class="font-semibold text-zinc-300 block mb-1">URL Servidor Emby</label>
+                            <input type="text" id="embyHost" placeholder="http://tu-servidor:8096" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-zinc-200">
                         </div>
-                    </div>
-
-                    <div class="space-y-4">
                         <div>
-                            <label class="text-xs font-semibold text-zinc-300 block mb-1.5">URL o IP del Servidor Emby</label>
-                            <input type="text" id="embyHost" placeholder="http://tu-servidor-emby.com:8096" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
+                            <label class="font-semibold text-zinc-300 block mb-1">API Key Maestra</label>
+                            <input type="password" id="embyApiKey" placeholder="Tu API Key de Emby" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-zinc-200">
                         </div>
-
-                        <div>
-                            <label class="text-xs font-semibold text-zinc-300 block mb-1.5">API Key Maestra</label>
-                            <input type="password" id="embyApiKey" placeholder="Ej: 9b2d3e4f5a6b7c8d9e0f..." class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-xs text-zinc-200 focus:outline-none focus:border-brand-500">
-                        </div>
-
-                        <div class="pt-2 flex items-center gap-3">
-                            <button onclick="testEmbyConnection()" class="px-5 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white font-semibold text-xs rounded-xl transition flex items-center gap-2">
-                                <i class="fa-solid fa-plug"></i> Probar Conexión Emby
-                            </button>
-                            <button onclick="saveEmbySettings()" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-500 text-white font-semibold text-xs rounded-xl transition shadow-lg glow-accent">
-                                Guardar Credenciales API
-                            </button>
+                        <div class="flex gap-2 pt-2">
+                            <button onclick="testEmbyConnection()" class="px-4 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl font-semibold">Probar Conexión</button>
+                            <button onclick="saveEmbySettings()" class="px-4 py-2.5 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-semibold">Guardar Ajustes</button>
                         </div>
                     </div>
                 </div>
@@ -331,98 +369,49 @@ Descarga la app oficial de Emby en tu dispositivo e ingresa tus datos. ¡Que lo 
 
     <!-- MODAL CLIENTE -->
     <div id="clientModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-        <div class="glass-panel w-full max-w-lg rounded-2xl border border-zinc-800 p-6 space-y-5">
-            <div class="flex justify-between items-center border-b border-zinc-800 pb-3">
-                <h3 class="font-bold text-white text-base flex items-center gap-2"><i class="fa-solid fa-user-plus text-brand-400"></i> Nuevo Cliente Emby</h3>
-                <button onclick="closeClientModal()" class="text-zinc-500 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-
-            <div class="space-y-4 text-xs">
-                <div>
-                    <label class="font-semibold text-zinc-300 block mb-1">Nombre de Usuario Emby</label>
-                    <input type="text" id="modalUsername" placeholder="ej. cliente_juan" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2 text-zinc-200 focus:outline-none focus:border-brand-500">
-                </div>
-
-                <div>
-                    <div class="flex justify-between mb-1">
-                        <label class="font-semibold text-zinc-300">Contraseña</label>
-                        <button onclick="generateRandomPass()" class="text-brand-400 text-[11px] hover:underline">Autogenerar</button>
-                    </div>
-                    <input type="text" id="modalPassword" placeholder="Contraseña de acceso" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2 text-zinc-200 focus:outline-none focus:border-brand-500">
-                </div>
-
-                <div class="grid grid-cols-2 gap-3">
-                    <div>
-                        <label class="font-semibold text-zinc-300 block mb-1">Duración (Meses)</label>
-                        <select id="modalMonths" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-200 focus:outline-none focus:border-brand-500">
-                            <option value="1">1 Mes (1 Crédito)</option>
-                            <option value="3">3 Meses (3 Créditos)</option>
-                            <option value="6">6 Meses (6 Créditos)</option>
-                            <option value="12">12 Meses (12 Créditos)</option>
-                        </select>
-                    </div>
-                    <div>
-                        <label class="font-semibold text-zinc-300 block mb-1">Pantallas Simultáneas</label>
-                        <select id="modalStreams" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-200 focus:outline-none focus:border-brand-500">
-                            <option value="1">1 Pantalla</option>
-                            <option value="2">2 Pantallas</option>
-                            <option value="3">3 Pantallas</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div>
-                    <label class="font-semibold text-zinc-300 block mb-1">Notas Internas</label>
-                    <input type="text" id="modalNotes" placeholder="Ej: Telegram @juan, Bizum" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2 text-zinc-200 focus:outline-none focus:border-brand-500">
-                </div>
-            </div>
-
-            <div class="flex gap-2 pt-2 border-t border-zinc-800">
-                <button onclick="closeClientModal()" class="flex-1 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-semibold text-xs rounded-xl transition">Cancelar</button>
-                <button onclick="saveClient()" class="flex-1 py-2.5 bg-brand-600 hover:bg-brand-500 text-white font-semibold text-xs rounded-xl transition shadow-lg glow-accent">Crear Cliente</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL MENSAJE CLIENTE -->
-    <div id="messageModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-        <div class="glass-panel w-full max-w-md rounded-2xl border border-zinc-800 p-6 space-y-4">
-            <div class="flex justify-between items-center border-b border-zinc-800 pb-3">
-                <h3 class="font-bold text-white text-sm flex items-center gap-2"><i class="fa-solid fa-paper-plane text-emerald-400"></i> Datos de Acceso Generados</h3>
-                <button onclick="closeMessageModal()" class="text-zinc-500 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-
-            <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 font-mono text-xs text-zinc-300 whitespace-pre-wrap" id="modalMessageText"></div>
-
-            <div class="flex gap-2 pt-2">
-                <button onclick="copyModalMsg()" class="flex-1 py-2 bg-zinc-800 hover:bg-zinc-700 text-white font-medium rounded-xl text-xs transition flex items-center justify-center gap-2"><i class="fa-solid fa-copy"></i> Copiar</button>
-                <button onclick="shareModalWA()" class="flex-1 py-2 bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-xl text-xs transition flex items-center justify-center gap-2"><i class="fa-brands fa-whatsapp"></i> WhatsApp</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL NUEVO RESELLER -->
-    <div id="resellerModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-        <div class="glass-panel w-full max-w-md rounded-2xl border border-zinc-800 p-6 space-y-4">
-            <div class="flex justify-between items-center border-b border-zinc-800 pb-3">
-                <h3 class="font-bold text-white text-sm flex items-center gap-2"><i class="fa-solid fa-user-tie text-brand-400"></i> Nuevo Revendedor</h3>
-                <button onclick="closeResellerModal()" class="text-zinc-500 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
-            </div>
-
+        <div class="glass-panel w-full max-w-lg rounded-2xl border border-zinc-800 p-6 space-y-5 shadow-2xl">
+            <h3 class="font-bold text-white text-base">Nuevo Cliente Emby</h3>
             <div class="space-y-3 text-xs">
-                <div>
-                    <label class="font-semibold text-zinc-300 block mb-1">Nombre Revendedor</label>
-                    <input type="text" id="resellerNameInput" placeholder="Ej: Reseller_Carlos" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2 text-zinc-200 focus:outline-none focus:border-brand-500">
-                </div>
-                <div>
-                    <label class="font-semibold text-zinc-300 block mb-1">Créditos Iniciales</label>
-                    <input type="number" id="resellerCreditsInput" value="50" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2 text-zinc-200 focus:outline-none focus:border-brand-500">
-                </div>
+                <input type="text" id="modalUsername" placeholder="Nombre de usuario" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2 text-zinc-200">
+                <input type="text" id="modalPassword" placeholder="Contraseña" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2 text-zinc-200">
+                <select id="modalMonths" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-200">
+                    <option value="1">1 Mes (1 Crédito)</option>
+                    <option value="3">3 Meses (3 Créditos)</option>
+                </select>
+                <select id="modalStreams" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-200">
+                    <option value="1">1 Pantalla</option>
+                    <option value="2">2 Pantallas</option>
+                </select>
+                <input type="text" id="modalNotes" placeholder="Notas internas" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2 text-zinc-200">
             </div>
-
             <div class="flex gap-2 pt-2 border-t border-zinc-800">
-                <button onclick="closeResellerModal()" class="flex-1 py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-semibold text-xs rounded-xl transition">Cancelar</button>
-                <button onclick="saveReseller()" class="flex-1 py-2 bg-brand-600 hover:bg-brand-500 text-white font-semibold text-xs rounded-xl transition">Guardar</button>
+                <button onclick="closeClientModal()" class="flex-1 py-2 bg-zinc-800 text-zinc-300 rounded-xl text-xs">Cancelar</button>
+                <button onclick="saveClient()" class="flex-1 py-2 bg-brand-600 text-white rounded-xl text-xs font-semibold">Crear</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL MENSAJE -->
+    <div id="messageModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="glass-panel w-full max-w-md rounded-2xl border border-zinc-800 p-6 space-y-4 shadow-2xl">
+            <h3 class="font-bold text-white text-sm">Datos de Acceso</h3>
+            <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 font-mono text-xs text-zinc-300 whitespace-pre-wrap" id="modalMessageText"></div>
+            <div class="flex gap-2">
+                <button onclick="copyModalMsg()" class="flex-1 py-2 bg-zinc-800 text-white rounded-xl text-xs">Copiar</button>
+                <button onclick="shareModalWA()" class="flex-1 py-2 bg-emerald-600 text-white rounded-xl text-xs">WhatsApp</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL RESELLER -->
+    <div id="resellerModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+        <div class="glass-panel w-full max-w-md rounded-2xl border border-zinc-800 p-6 space-y-4 shadow-2xl">
+            <h3 class="font-bold text-white text-sm">Nuevo Revendedor</h3>
+            <input type="text" id="resellerNameInput" placeholder="Nombre revendedor" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2 text-zinc-200 text-xs">
+            <input type="number" id="resellerCreditsInput" value="50" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2 text-zinc-200 text-xs">
+            <div class="flex gap-2 pt-2">
+                <button onclick="closeResellerModal()" class="flex-1 py-2 bg-zinc-800 text-zinc-300 rounded-xl text-xs">Cancelar</button>
+                <button onclick="saveReseller()" class="flex-1 py-2 bg-brand-600 text-white rounded-xl text-xs">Guardar</button>
             </div>
         </div>
     </div>
@@ -432,13 +421,10 @@ Descarga la app oficial de Emby en tu dispositivo e ingresa tus datos. ¡Que lo 
         let db = {
             adminCredits: 250,
             clients: [
-                { id: '1', username: 'juan_perez', maxStreams: 1, expiresAt: '2026-11-01', isActive: true, notes: 'Telegram @juan' },
-                { id: '2', username: 'maria_g', maxStreams: 2, expiresAt: '2026-10-24', isActive: true, notes: 'Bizum mensual' },
-                { id: '3', username: 'carlos_99', maxStreams: 1, expiresAt: '2026-10-10', isActive: false, notes: 'Expirado' }
+                { id: '1', username: 'juan_perez', maxStreams: 1, expiresAt: '2026-11-01', isActive: true, notes: 'Telegram @juan' }
             ],
             resellers: [
-                { id: '1', name: 'Reseller_Carlos', credits: 85, clientsCount: 24 },
-                { id: '2', name: 'Reseller_Elena', credits: 310, clientsCount: 68 }
+                { id: '1', name: 'Reseller_Carlos', credits: 85, clientsCount: 24 }
             ]
         };
 
@@ -454,11 +440,17 @@ Descarga la app oficial de Emby en tu dispositivo e ingresa tus datos. ¡Que lo 
             loadSettings();
         });
 
+        function logAudit(action) {
+            const time = new Date().toLocaleTimeString();
+            const container = document.getElementById('auditLogsContainer');
+            if(container) {
+                container.innerHTML += `<p>[${time}] ${action}</p>`;
+            }
+        }
+
         function loadLocalDB() {
             const saved = localStorage.getItem('morvehtv_db');
-            if (saved) {
-                try { db = JSON.parse(saved); } catch(e){}
-            }
+            if (saved) { try { db = JSON.parse(saved); } catch(e){} }
             document.getElementById('adminCredits').innerText = db.adminCredits;
         }
 
@@ -484,20 +476,15 @@ Descarga la app oficial de Emby en tu dispositivo e ingresa tus datos. ¡Que lo 
 
         function updateDashboardStats() {
             const now = new Date();
-            const in7days = new Date();
-            in7days.setDate(now.getDate() + 7);
-
             let activeCount = 0;
             let expiringCount = 0;
-
             db.clients.forEach(c => {
                 const exp = new Date(c.expiresAt);
                 if (c.isActive && exp >= now) {
                     activeCount++;
-                    if (exp <= in7days) expiringCount++;
+                    if ((exp - now) < 7*24*60*60*1000) expiringCount++;
                 }
             });
-
             document.getElementById('stat-active-clients').innerText = activeCount;
             document.getElementById('stat-expiring-clients').innerText = expiringCount;
             document.getElementById('stat-resellers-count').innerText = db.resellers.length;
@@ -506,80 +493,57 @@ Descarga la app oficial de Emby en tu dispositivo e ingresa tus datos. ¡Que lo 
         function renderClients(filterText = '') {
             const tbody = document.getElementById('clientsTableBody');
             tbody.innerHTML = '';
-
-            const filtered = db.clients.filter(c => 
-                c.username.toLowerCase().includes(filterText.toLowerCase()) || 
-                (c.notes && c.notes.toLowerCase().includes(filterText.toLowerCase()))
-            );
+            const filtered = db.clients.filter(c => c.username.toLowerCase().includes(filterText.toLowerCase()));
 
             filtered.forEach(client => {
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-zinc-900/40 transition";
-
-                const isExpired = new Date(client.expiresAt) < new Date();
-                const statusBadge = client.isActive && !isExpired
-                    ? '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">Activo</span>'
-                    : '<span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-rose-500/10 text-rose-400 border border-rose-500/20">Expirado/Inactivo</span>';
-
                 tr.innerHTML = `
-                    <td class="px-5 py-3.5 font-semibold text-white flex items-center gap-2">
-                        <i class="fa-solid fa-circle-user text-zinc-500"></i> ${client.username}
-                    </td>
+                    <td class="px-5 py-3.5 font-semibold text-white">${client.username}</td>
                     <td class="px-5 py-3.5">${client.maxStreams} Pantalla(s)</td>
                     <td class="px-5 py-3.5 font-mono text-xs">${client.expiresAt}</td>
-                    <td class="px-5 py-3.5">${statusBadge}</td>
+                    <td class="px-5 py-3.5"><span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400">Activo</span></td>
                     <td class="px-5 py-3.5 text-xs text-zinc-500">${client.notes || '-'}</td>
                     <td class="px-5 py-3.5 text-right space-x-2">
-                        <button onclick="openMessageModal('${client.username}', '••••••', '${client.expiresAt}')" class="p-1.5 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-lg text-xs" title="Enviar Datos"><i class="fa-solid fa-paper-plane"></i></button>
-                        <button onclick="renewClient('${client.id}')" class="p-1.5 bg-brand-600/20 hover:bg-brand-600 text-brand-400 hover:text-white rounded-lg text-xs transition" title="Renovar 1 Mes"><i class="fa-solid fa-rotate-right"></i></button>
-                        <button onclick="deleteClient('${client.id}')" class="p-1.5 bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-white rounded-lg text-xs transition" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
+                        <button onclick="openMessageModal('${client.username}', '••••••', '${client.expiresAt}')" class="p-1.5 bg-zinc-800 text-zinc-300 rounded-lg text-xs" title="Enviar Datos"><i class="fa-solid fa-paper-plane"></i></button>
+                        <button onclick="deleteClient('${client.id}')" class="p-1.5 bg-rose-600/20 text-rose-400 rounded-lg text-xs" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
                     </td>
                 `;
                 tbody.appendChild(tr);
             });
         }
 
-        function filterClients() {
-            renderClients(document.getElementById('searchClient').value);
-        }
+        function filterClients() { renderClients(document.getElementById('searchClient').value); }
 
         function renderResellers() {
             const grid = document.getElementById('resellersGrid');
             grid.innerHTML = '';
-
             db.resellers.forEach(reseller => {
                 const card = document.createElement('div');
-                card.className = "glass-panel p-5 rounded-2xl border border-zinc-800 space-y-3";
+                card.className = "glass-panel p-5 rounded-2xl border border-zinc-800 space-y-3 shadow-xl";
                 card.innerHTML = `
                     <div class="flex justify-between items-center">
-                        <div class="flex items-center gap-3">
-                            <div class="w-10 h-10 rounded-full bg-zinc-800 border border-zinc-700 flex items-center justify-center text-white font-bold">${reseller.name.slice(0, 2).toUpperCase()}</div>
-                            <div>
-                                <h4 class="font-bold text-zinc-200 text-sm">${reseller.name}</h4>
-                                <p class="text-xs text-zinc-500">${reseller.clientsCount} clientes activos</p>
-                            </div>
-                        </div>
-                        <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">${reseller.credits} Créditos</span>
-                    </div>
-                    <div class="pt-2 flex gap-2">
-                        <button onclick="addResellerCredits('${reseller.id}')" class="flex-1 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-xs font-medium text-zinc-300 rounded-lg"><i class="fa-solid fa-plus text-amber-400"></i> Añadir Créditos</button>
-                        <button onclick="deleteReseller('${reseller.id}')" class="py-1.5 px-3 bg-rose-600/20 text-rose-400 hover:bg-rose-600 hover:text-white text-xs rounded-lg"><i class="fa-solid fa-trash"></i></button>
+                        <h4 class="font-bold text-zinc-200 text-sm">${reseller.name}</h4>
+                        <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400">${reseller.credits} Créditos</span>
                     </div>
                 `;
                 grid.appendChild(card);
             });
         }
 
-        function setDemoDuration(hours) {
+        function setDemoHours(hours) {
             currentDemoHours = hours;
-            document.querySelectorAll('.demo-btn').forEach(btn => btn.className = "demo-btn p-3 rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700 text-center");
-            document.getElementById(`demo-${hours}`).className = "demo-btn p-3 rounded-xl border border-brand-500/50 bg-brand-500/10 text-white text-center";
+            document.querySelectorAll('.demo-h-btn').forEach(btn => {
+                btn.className = "demo-h-btn py-2.5 rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700 font-bold text-center transition";
+            });
+            document.getElementById(`dbtn-${hours}`).className = "demo-h-btn py-2.5 rounded-xl border border-brand-500/50 bg-brand-500/10 text-white font-bold text-center transition";
         }
 
-        function generateExpressDemo() {
-            const host = localStorage.getItem('embyHost') || 'http://tu-servidor-emby.com:8096';
-            const user = 'demo_' + Math.floor(1000 + Math.random() * 9000);
+        function createExpressDemoAccount() {
+            const customUser = document.getElementById('demoCustomUser').value.trim();
+            const user = customUser !== '' ? customUser : 'demo_' + Math.floor(1000 + Math.random() * 9000);
             const pass = Math.random().toString(36).slice(-6);
+            const streams = document.getElementById('demoStreams').value;
 
             const expDate = new Date();
             expDate.setHours(expDate.getHours() + currentDemoHours);
@@ -588,7 +552,7 @@ Descarga la app oficial de Emby en tu dispositivo e ingresa tus datos. ¡Que lo 
             db.clients.unshift({
                 id: Date.now().toString(),
                 username: user,
-                maxStreams: 1,
+                maxStreams: parseInt(streams),
                 expiresAt: dateStr,
                 isActive: true,
                 notes: `Demo Express (${currentDemoHours}h)`
@@ -596,171 +560,121 @@ Descarga la app oficial de Emby en tu dispositivo e ingresa tus datos. ¡Que lo 
 
             saveLocalDB();
             renderClients();
+            logAudit(`Demo creada: ${user} (${currentDemoHours}h)`);
 
+            const host = localStorage.getItem('embyHost') || 'http://tu-servidor:8096';
             const template = localStorage.getItem('msgTemplate') || document.getElementById('templateText').value;
             currentMsgText = template
                 .replace(/{usuario}/g, user)
                 .replace(/{password}/g, pass)
                 .replace(/{host}/g, host)
-                .replace(/{fecha_expiracion}/g, dateStr + ' (' + currentDemoHours + 'h)')
-                .replace(/{streams}/g, '1');
+                .replace(/{fecha_expiracion}/g, dateStr + ` (${currentDemoHours}h)`)
+                .replace(/{streams}/g, streams + ' pantalla(s)');
 
             document.getElementById('demoMessageContent').innerText = currentMsgText;
             document.getElementById('demoOutputBox').classList.remove('hidden');
         }
 
-        function copyDemoText() {
-            navigator.clipboard.writeText(currentMsgText);
-            alert('¡Mensaje de demo copiado!');
-        }
+        function copyDemoText() { navigator.clipboard.writeText(currentMsgText); alert('¡Copiado!'); }
+        function shareWhatsAppDemo() { window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(currentMsgText)}`, '_blank'); }
 
-        function shareWhatsAppDemo() {
-            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(currentMsgText)}`, '_blank');
+        function generateBulkAccounts() {
+            const prefix = document.getElementById('bulkPrefix').value;
+            const count = parseInt(document.getElementById('bulkCount').value) || 5;
+            const months = parseInt(document.getElementById('bulkMonths').value);
+
+            for(let i=1; i<=count; i++) {
+                const user = `${prefix}${Math.floor(100 + Math.random()*900)}`;
+                const expDate = new Date();
+                expDate.setMonth(expDate.getMonth() + months);
+                db.clients.unshift({
+                    id: Date.now().toString() + i,
+                    username: user,
+                    maxStreams: 1,
+                    expiresAt: expDate.toISOString().split('T')[0],
+                    isActive: true,
+                    notes: 'Lote masivo'
+                });
+            }
+            saveLocalDB();
+            renderClients();
+            logAudit(`Generadas ${count} cuentas en lote masivo.`);
+            alert(`¡Se han creado ${count} cuentas con éxito!`);
+            switchTab('clients');
         }
 
         function openClientModal() { document.getElementById('clientModal').classList.remove('hidden'); }
         function closeClientModal() { document.getElementById('clientModal').classList.add('hidden'); }
-        function generateRandomPass() { document.getElementById('modalPassword').value = Math.random().toString(36).slice(-8); }
+        function openResellerModal() { document.getElementById('resellerModal').classList.remove('hidden'); }
+        function closeResellerModal() { document.getElementById('resellerModal').classList.add('hidden'); }
 
-        async function saveClient() {
+        function saveClient() {
             const user = document.getElementById('modalUsername').value;
             const pass = document.getElementById('modalPassword').value;
             const months = parseInt(document.getElementById('modalMonths').value);
-            const streams = parseInt(document.getElementById('modalStreams').value);
-            const notes = document.getElementById('modalNotes').value;
-
-            if (!user) { alert('Por favor, ingresa un nombre de usuario'); return; }
-
-            if (db.adminCredits < months) {
-                alert('No tienes créditos suficientes para realizar esta operación.');
-                return;
-            }
+            if (!user) return;
 
             db.adminCredits -= months;
-
             const expDate = new Date();
             expDate.setMonth(expDate.getMonth() + months);
-            const dateStr = expDate.toISOString().split('T')[0];
 
             db.clients.unshift({
                 id: Date.now().toString(),
                 username: user,
-                maxStreams: streams,
-                expiresAt: dateStr,
+                maxStreams: parseInt(document.getElementById('modalStreams').value),
+                expiresAt: expDate.toISOString().split('T')[0],
                 isActive: true,
-                notes: notes
+                notes: document.getElementById('modalNotes').value
             });
-
             saveLocalDB();
             renderClients();
             closeClientModal();
-            openMessageModal(user, pass || '123456', dateStr);
-        }
-
-        function renewClient(id) {
-            if (db.adminCredits < 1) { alert('No tienes suficientes créditos.'); return; }
-
-            const client = db.clients.find(c => c.id === id);
-            if (client) {
-                db.adminCredits -= 1;
-                const currExp = new Date(client.expiresAt) > new Date() ? new Date(client.expiresAt) : new Date();
-                currExp.setMonth(currExp.getMonth() + 1);
-                client.expiresAt = currExp.toISOString().split('T')[0];
-                client.isActive = true;
-
-                saveLocalDB();
-                renderClients();
-                alert(`¡Cliente ${client.username} renovado 1 mes!`);
-            }
+            logAudit(`Cliente creado: ${user}`);
         }
 
         function deleteClient(id) {
-            if (confirm('¿Eliminar cliente?')) {
-                db.clients = db.clients.filter(c => c.id !== id);
-                saveLocalDB();
-                renderClients();
-            }
+            db.clients = db.clients.filter(c => c.id !== id);
+            saveLocalDB();
+            renderClients();
         }
-
-        function openResellerModal() { document.getElementById('resellerModal').classList.remove('hidden'); }
-        function closeResellerModal() { document.getElementById('resellerModal').classList.add('hidden'); }
 
         function saveReseller() {
             const name = document.getElementById('resellerNameInput').value;
-            const credits = parseInt(document.getElementById('resellerCreditsInput').value) || 0;
-
-            if (!name) { alert('Ingresa el nombre'); return; }
-
-            db.resellers.push({ id: Date.now().toString(), name: name, credits: credits, clientsCount: 0 });
+            if(!name) return;
+            db.resellers.push({ id: Date.now().toString(), name, credits: parseInt(document.getElementById('resellerCreditsInput').value), clientsCount: 0 });
             saveLocalDB();
             renderResellers();
             closeResellerModal();
         }
 
-        function addResellerCredits(id) {
-            const r = db.resellers.find(x => x.id === id);
-            if (r) {
-                const amount = prompt(`Añadir créditos a ${r.name}:`, "10");
-                if (amount && !isNaN(amount)) { r.credits += parseInt(amount); saveLocalDB(); renderResellers(); }
-            }
-        }
-
-        function deleteReseller(id) {
-            if (confirm('¿Eliminar revendedor?')) {
-                db.resellers = db.resellers.filter(r => r.id !== id);
-                saveLocalDB();
-                renderResellers();
-            }
-        }
-
-        function openMessageModal(user, pass, date) {
-            const host = localStorage.getItem('embyHost') || 'http://tu-servidor-emby.com:8096';
-            const template = localStorage.getItem('msgTemplate') || document.getElementById('templateText').value;
-
-            currentMsgText = template
-                .replace(/{usuario}/g, user)
-                .replace(/{password}/g, pass)
-                .replace(/{host}/g, host)
-                .replace(/{fecha_expiracion}/g, date)
-                .replace(/{streams}/g, '1');
-
+        function openMessageModal(u, p, d) {
+            currentMsgText = `Usuario: ${u}\nPass: ${p}\nVence: ${d}`;
             document.getElementById('modalMessageText').innerText = currentMsgText;
             document.getElementById('messageModal').classList.remove('hidden');
         }
-
-        function closeMessageModal() { document.getElementById('messageModal').classList.add('hidden'); }
-        function copyModalMsg() { navigator.clipboard.writeText(currentMsgText); alert('¡Copiado!'); }
+        function copyModalMsg() { navigator.clipboard.writeText(currentMsgText); alert('Copiado'); }
         function shareModalWA() { window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(currentMsgText)}`, '_blank'); }
 
         function saveEmbySettings() {
             localStorage.setItem('embyHost', document.getElementById('embyHost').value);
             localStorage.setItem('embyApiKey', document.getElementById('embyApiKey').value);
-            alert('¡Ajustes guardados correctamente!');
+            alert('Guardado');
         }
-
         function loadSettings() {
             if (localStorage.getItem('embyHost')) document.getElementById('embyHost').value = localStorage.getItem('embyHost');
             if (localStorage.getItem('embyApiKey')) document.getElementById('embyApiKey').value = localStorage.getItem('embyApiKey');
-            if (localStorage.getItem('msgTemplate')) document.getElementById('templateText').value = localStorage.getItem('msgTemplate');
         }
-
         function testEmbyConnection() {
             const host = document.getElementById('embyHost').value;
             const key = document.getElementById('embyApiKey').value;
-            if (!host || !key) { alert('Introduce URL y API Key.'); return; }
-
             fetch(`${host}/emby/System/Info?api_key=${key}`)
-                .then(res => res.json())
-                .then(data => {
-                    alert(`¡Conexión Exitosa!\nServidor: ${data.ServerName}\nVersión: ${data.Version}`);
-                    document.getElementById('embyStatusText').innerText = `Conectado: ${data.ServerName}`;
-                })
-                .catch(() => alert('No se pudo conectar con el servidor Emby.'));
+                .then(r => r.json())
+                .then(d => alert(`Conectado a ${d.ServerName}`))
+                .catch(() => alert('Error de conexión'));
         }
-
         function saveTemplate() {
             localStorage.setItem('msgTemplate', document.getElementById('templateText').value);
-            alert('¡Plantilla guardada!');
+            alert('Plantilla guardada');
         }
 
         function initChart() {
@@ -769,24 +683,9 @@ Descarga la app oficial de Emby en tu dispositivo e ingresa tus datos. ¡Que lo 
                 type: 'line',
                 data: {
                     labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', 'Ahora'],
-                    datasets: [{
-                        label: 'Conexiones',
-                        data: [6, 3, 5, 12, 19, 28, 18],
-                        borderColor: '#8b5cf6',
-                        backgroundColor: 'rgba(139, 92, 246, 0.1)',
-                        fill: true,
-                        tension: 0.4
-                    }]
+                    datasets: [{ label: 'Conexiones', data: [6, 3, 5, 12, 19, 28, 18], borderColor: '#8b5cf6', backgroundColor: 'rgba(139, 92, 246, 0.1)', fill: true, tension: 0.4 }]
                 },
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: { legend: { display: false } },
-                    scales: {
-                        x: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#71717a' } },
-                        y: { grid: { color: 'rgba(255,255,255,0.05)' }, ticks: { color: '#71717a' } }
-                    }
-                }
+                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { color: 'rgba(255,255,255,0.05)' } }, y: { grid: { color: 'rgba(255,255,255,0.05)' } } } }
             });
         }
     </script>
