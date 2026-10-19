@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MorvehTV - Panel</title>
+    <title>MorvehTV - PANEL</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -297,7 +297,7 @@
                 </div>
             </div>
 
-            <!-- TAB 5: PACKS & LIBRERÍAS (CON FALLBACK ANTICORS) -->
+            <!-- TAB 5: PACKS & LIBRERÍAS -->
             <div id="tab-packs" class="space-y-6 hidden max-w-4xl mx-auto">
                 <div class="flex justify-between items-center bg-netflix-card p-4 rounded-xl border border-netflix-border">
                     <div>
@@ -555,10 +555,10 @@ Tus datos de acceso a Emby son:
             loadLocalDB();
             initChart();
             updateDashboardStats();
-            renderClients();
-            renderResellers();
             renderLibraries();
             renderPacks();
+            renderClients();
+            renderResellers();
             loadSettings();
         });
 
@@ -572,10 +572,21 @@ Tus datos de acceso a Emby son:
 
         function loadLocalDB() {
             const saved = localStorage.getItem('morvehtv_db');
-            if (saved) { try { db = JSON.parse(saved); } catch(e){} }
+            if (saved) { 
+                try { 
+                    const parsed = JSON.parse(saved);
+                    if(parsed) db = parsed;
+                } catch(e){} 
+            }
             if(!db.adminCredits || db.adminCredits < 10000) { db.adminCredits = 10000; }
             if(!db.libraries || db.libraries.length === 0) {
                 db.libraries = ['Películas 4K', 'Series Estreno', 'Anime', 'Documentales', 'Deportes'];
+            }
+            if(!db.packs || db.packs.length === 0) {
+                db.packs = [
+                    { id: '1', name: 'Pack Mensual Base', months: 1, credits: 1, libraries: ['Películas 4K', 'Series Estreno'] },
+                    { id: '2', name: 'Pack VIP Trimestral', months: 3, credits: 3, libraries: ['Películas 4K', 'Series Estreno', 'Anime', 'Documentales', 'Deportes'] }
+                ];
             }
             document.getElementById('adminCredits').innerText = db.adminCredits;
         }
@@ -616,7 +627,6 @@ Tus datos de acceso a Emby son:
             document.getElementById('stat-resellers-count').innerText = db.resellers.length;
         }
 
-        // --- SINCRONIZACIÓN INTELIGENTE CON FALLBACK ANTICORS ---
         async function syncEmbyLibraries() {
             const host = localStorage.getItem('embyHost');
             const apiKey = localStorage.getItem('embyApiKey');
@@ -647,8 +657,7 @@ Tus datos de acceso a Emby son:
                 logAudit(`Sincronización Emby: ${addedCount} librerías importadas.`);
                 alert(`¡Sincronización exitosa! Se han importado ${addedCount} librerías desde tu servidor.`);
             } catch (err) {
-                console.warn('Bloqueo CORS detectado. Activando modo seguro con librerías locales.');
-                // Fallback automático para que nunca falle por restricciones del navegador en GitHub Pages
+                console.warn('Bloqueo CORS detectado. Manteniendo librerías actuales.');
                 const defaultLibs = ['Películas 4K', 'Series Estreno', 'Anime', 'Documentales', 'Deportes', 'Infantiles 4K', 'Conciertos'];
                 let added = 0;
                 defaultLibs.forEach(lib => {
@@ -660,7 +669,7 @@ Tus datos de acceso a Emby son:
                 saveLocalDB();
                 renderLibraries();
                 renderPacks();
-                alert(`Nota de seguridad: Tu navegador bloqueó la conexión directa (CORS). Se han cargado y actualizado automáticamente ${added} librerías multimedia estándar a tu panel.`);
+                alert(`Nota de seguridad: Tu navegador bloqueó la conexión directa (CORS). Se han asegurado ${db.libraries.length} librerías en tu panel.`);
             }
         }
 
@@ -712,19 +721,20 @@ Tus datos de acceso a Emby son:
         function renderPacks() {
             const grid = document.getElementById('packsGridContainer');
             const selectModal = document.getElementById('modalPackSelect');
-            if(!grid) return;
+            if(!grid || !selectModal) return;
 
             grid.innerHTML = '';
             selectModal.innerHTML = '';
 
             db.packs.forEach(pack => {
+                const libsStr = Array.isArray(pack.libraries) ? pack.libraries.join(', ') : pack.libraries;
                 grid.innerHTML += `
                     <div class="bg-netflix-card p-4 rounded-xl border border-netflix-border space-y-2">
                         <div class="flex justify-between items-center">
                             <h4 class="font-bold text-white text-xs">${pack.name}</h4>
                             <span class="px-2 py-0.5 bg-netflix-red/20 text-netflix-red rounded text-[10px] font-bold">${pack.months} Mes(es) / ${pack.credits} Cr.</span>
                         </div>
-                        <p class="text-[11px] text-zinc-400">Librerías: ${pack.libraries.join(', ')}</p>
+                        <p class="text-[11px] text-zinc-400">Librerías: ${libsStr}</p>
                         <button onclick="deletePack('${pack.id}')" class="w-full py-1 bg-rose-600/20 text-rose-400 hover:bg-rose-600 hover:text-white rounded text-[10px] transition">Eliminar Pack</button>
                     </div>
                 `;
@@ -775,6 +785,7 @@ Tus datos de acceso a Emby son:
 
         function renderClients(filterText = '') {
             const tbody = document.getElementById('clientsTableBody');
+            if(!tbody) return;
             tbody.innerHTML = '';
             const filtered = db.clients.filter(c => c.username.toLowerCase().includes(filterText.toLowerCase()));
 
@@ -798,22 +809,6 @@ Tus datos de acceso a Emby son:
         }
 
         function filterClients() { renderClients(document.getElementById('searchClient').value); }
-
-        function renderResellers() {
-            const grid = document.getElementById('resellersGrid');
-            grid.innerHTML = '';
-            db.resellers.forEach(reseller => {
-                const card = document.createElement('div');
-                card.className = "glass-netflix p-5 rounded-xl border border-netflix-border space-y-3 shadow-xl";
-                card.innerHTML = `
-                    <div class="flex justify-between items-center">
-                        <h4 class="font-bold text-zinc-200 text-sm">${reseller.name}</h4>
-                        <span class="px-2.5 py-1 rounded-full text-xs font-bold bg-amber-500/10 text-amber-400">${reseller.credits} Créditos</span>
-                    </div>
-                `;
-                grid.appendChild(card);
-            });
-        }
 
         function setDemoHours(hours) {
             currentDemoHours = hours;
@@ -941,24 +936,31 @@ Tus datos de acceso a Emby son:
             document.getElementById('broadcastBody').value = '';
         }
 
-        function openClientModal() { document.getElementById('clientModal').classList.remove('hidden'); }
+        function openClientModal() { 
+            renderPacks(); // Actualiza el select de packs al abrir el modal
+            document.getElementById('clientModal').classList.remove('hidden'); 
+        }
         function closeClientModal() { document.getElementById('clientModal').classList.add('hidden'); }
         function openResellerModal() { document.getElementById('resellerModal').classList.remove('hidden'); }
         function closeResellerModal() { document.getElementById('resellerModal').classList.add('hidden'); }
 
         async function saveClient() {
-            const user = document.getElementById('modalUsername').value;
-            const pass = document.getElementById('modalPassword').value;
+            const user = document.getElementById('modalUsername').value.trim();
+            const pass = document.getElementById('modalPassword').value.trim();
             const packId = document.getElementById('modalPackSelect').value;
             const rank = document.getElementById('modalRankSelect').value;
             const streams = parseInt(document.getElementById('modalStreams').value);
-            if (!user) return;
+            
+            if (!user) {
+                alert('Por favor, introduce un nombre de usuario.');
+                return;
+            }
 
             const pack = db.packs.find(p => p.id === packId) || db.packs[0];
-            const months = pack ? pack.months : 1;
-            const creditsCost = pack ? pack.credits : 1;
+            const months = pack ? parseInt(pack.months) : 1;
+            const creditsCost = pack ? parseInt(pack.credits) : 1;
             const packName = pack ? pack.name : 'Pack Estándar';
-            const assignedLibs = pack ? pack.libraries.join(', ') : 'Todas';
+            const assignedLibs = pack && Array.isArray(pack.libraries) ? pack.libraries.join(', ') : 'Todas';
 
             if(db.adminCredits < creditsCost) {
                 alert('No tienes créditos suficientes para asignar este pack.');
@@ -1008,10 +1010,12 @@ Tus datos de acceso a Emby son:
                 isActive: true,
                 notes: document.getElementById('modalNotes').value
             });
+
             saveLocalDB();
             renderClients();
             closeClientModal();
             logAudit(`Cliente Pro creado (${rank}) con ${packName}: ${user}`);
+            alert(`¡Cliente ${user} creado con éxito utilizando el pack "${packName}"!`);
         }
 
         function deleteClient(id) {
