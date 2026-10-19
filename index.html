@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MorvehTV</title>
+    <title>MorvehTV - Netflix Cinematic Enterprise Edition</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -95,6 +95,9 @@
                 <div>
                     <p class="text-[11px] font-bold uppercase tracking-wider text-zinc-500 px-3 mb-2">Herramientas Pro</p>
                     <nav class="space-y-1">
+                        <button onclick="switchTab('packs')" id="nav-packs" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-zinc-400 hover:text-white hover:bg-netflix-card">
+                            <i class="fa-solid fa-boxes-stacked w-5"></i> Packs & Librerías
+                        </button>
                         <button onclick="switchTab('bulk')" id="nav-bulk" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-zinc-400 hover:text-white hover:bg-netflix-card">
                             <i class="fa-solid fa-layer-group w-5"></i> Generador Masivo
                         </button>
@@ -204,8 +207,8 @@
                             <thead class="bg-[#181818] text-zinc-300 text-xs uppercase font-semibold border-b border-netflix-border">
                                 <tr>
                                     <th class="px-5 py-3.5">Usuario Emby</th>
-                                    <th class="px-5 py-3.5">Pantallas</th>
-                                    <th class="px-5 py-3.5">Perfil Bitrate</th>
+                                    <th class="px-5 py-3.5">Pack / Plan</th>
+                                    <th class="px-5 py-3.5">Librerías</th>
                                     <th class="px-5 py-3.5">Vencimiento</th>
                                     <th class="px-5 py-3.5">Estado</th>
                                     <th class="px-5 py-3.5 text-right">Acciones</th>
@@ -294,9 +297,58 @@
                 </div>
             </div>
 
-            <!-- TAB 5: BULK GENERATOR -->
+            <!-- TAB 5: PACKS & LIBRERÍAS -->
+            <div id="tab-packs" class="space-y-6 hidden max-w-4xl mx-auto">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <!-- Gestión de Librerías -->
+                    <div class="glass-netflix p-6 rounded-xl border border-netflix-border space-y-4 shadow-2xl">
+                        <h3 class="text-base font-bold text-white flex items-center gap-2"><i class="fa-solid fa-book-bookmark text-netflix-red"></i> Librerías de Emby</h3>
+                        <p class="text-xs text-zinc-400">Define las librerías sincronizadas de tu servidor que deseas usar en los packs.</p>
+                        
+                        <div class="flex gap-2">
+                            <input type="text" id="newLibraryInput" placeholder="Ej: Películas Estreno 4K" class="flex-1 bg-netflix-card border border-netflix-border rounded-xl px-3.5 py-2 text-xs text-zinc-200 focus:outline-none">
+                            <button onclick="addLibrary()" class="px-4 py-2 bg-netflix-red hover:bg-netflix-darkred text-white text-xs font-semibold rounded-xl transition">Añadir</button>
+                        </div>
+
+                        <div class="space-y-2 max-h-48 overflow-y-auto" id="librariesListContainer">
+                            <!-- Dynamic Libraries -->
+                        </div>
+                    </div>
+
+                    <!-- Gestión de Packs por Meses -->
+                    <div class="glass-netflix p-6 rounded-xl border border-netflix-border space-y-4 shadow-2xl">
+                        <h3 class="text-base font-bold text-white flex items-center gap-2"><i class="fa-solid fa-boxes-stacked text-netflix-red"></i> Packs por Meses y Créditos</h3>
+                        <p class="text-xs text-zinc-400">Crea tarifas predefinidas para asignar a clientes rápidamente.</p>
+                        
+                        <div class="space-y-3 text-xs">
+                            <input type="text" id="packNameInput" placeholder="Nombre del Pack (Ej: Pack VIP Trimestral)" class="w-full bg-netflix-card border border-netflix-border rounded-xl px-3.5 py-2 text-zinc-200">
+                            <div class="grid grid-cols-2 gap-2">
+                                <input type="number" id="packMonthsInput" placeholder="Meses (Ej: 3)" min="1" class="w-full bg-netflix-card border border-netflix-border rounded-xl px-3.5 py-2 text-zinc-200">
+                                <input type="number" id="packCreditsInput" placeholder="Créditos (Ej: 3)" min="1" class="w-full bg-netflix-card border border-netflix-border rounded-xl px-3.5 py-2 text-zinc-200">
+                            </div>
+                            <div>
+                                <label class="text-[11px] text-zinc-400 block mb-1">Selecciona Librerías incluidas:</label>
+                                <div id="packLibrariesCheckboxes" class="space-y-1.5 max-h-28 overflow-y-auto bg-[#0f0f11] p-3 rounded-xl border border-netflix-border text-xs">
+                                    <!-- Dynamic Checkboxes -->
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="saveNewPack()" class="w-full py-2.5 bg-netflix-red hover:bg-netflix-darkred text-white font-bold rounded-xl transition text-xs shadow-lg glow-netflix">Crear Pack de Suscripción</button>
+                    </div>
+                </div>
+
+                <!-- Lista de Packs Creados -->
+                <div class="glass-netflix p-6 rounded-xl border border-netflix-border space-y-4 shadow-2xl">
+                    <h3 class="text-base font-bold text-white flex items-center gap-2"><i class="fa-solid fa-list-check text-netflix-red"></i> Packs de Suscripción Activos</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4" id="packsGridContainer">
+                        <!-- Dynamic Packs Cards -->
+                    </div>
+                </div>
+            </div>
+
+            <!-- TAB 6: BULK GENERATOR -->
             <div id="tab-bulk" class="space-y-4 hidden max-w-xl mx-auto">
-                <div class="glass-panel p-6 rounded-xl border border-netflix-border space-y-4 shadow-2xl">
+                <div class="glass-netflix p-6 rounded-xl border border-netflix-border space-y-4 shadow-2xl">
                     <h3 class="text-base font-bold text-white flex items-center gap-2"><i class="fa-solid fa-layer-group text-netflix-red"></i> Generador Masivo de Cuentas</h3>
                     <p class="text-xs text-zinc-400">Genera múltiples accesos de Emby simultáneamente con nomenclatura automatizada.</p>
                     
@@ -323,7 +375,7 @@
                 </div>
             </div>
 
-            <!-- TAB 6: BROADCAST / ANUNCIOS -->
+            <!-- TAB 7: BROADCAST / ANUNCIOS -->
             <div id="tab-broadcast" class="space-y-4 hidden max-w-xl mx-auto">
                 <div class="glass-netflix p-6 rounded-xl border border-netflix-border space-y-4 shadow-2xl">
                     <h3 class="text-base font-bold text-white flex items-center gap-2"><i class="fa-solid fa-bullhorn text-netflix-red"></i> Centro de Anuncios y Broadcast</h3>
@@ -343,9 +395,9 @@
                 </div>
             </div>
 
-            <!-- TAB 7: AUDIT LOGS -->
+            <!-- TAB 8: AUDIT LOGS -->
             <div id="tab-logs" class="space-y-4 hidden max-w-3xl mx-auto">
-                <div class="glass-panel p-6 rounded-xl border border-netflix-border space-y-4 shadow-2xl">
+                <div class="glass-netflix p-6 rounded-xl border border-netflix-border space-y-4 shadow-2xl">
                     <h3 class="text-base font-bold text-white flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left text-netflix-red"></i> Registro de Auditoría y Trazabilidad</h3>
                     <div class="bg-[#0f0f11] p-4 rounded-xl border border-netflix-border font-mono text-xs text-zinc-400 space-y-2 max-h-96 overflow-y-auto" id="auditLogsContainer">
                         <p class="text-zinc-600">[Sistema Iniciado] Módulos de streaming MorvehTV Pro cargados.</p>
@@ -353,9 +405,9 @@
                 </div>
             </div>
 
-            <!-- TAB 8: PLANTILLAS -->
+            <!-- TAB 9: PLANTILLAS -->
             <div id="tab-templates" class="space-y-4 hidden max-w-3xl mx-auto">
-                <div class="glass-panel p-6 rounded-xl border border-netflix-border space-y-4 shadow-2xl">
+                <div class="glass-netflix p-6 rounded-xl border border-netflix-border space-y-4 shadow-2xl">
                     <h3 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-pen-to-square text-netflix-red"></i> Plantilla de Mensajes Automatizada</h3>
                     <textarea id="templateText" rows="7" class="w-full bg-[#0f0f11] border border-netflix-border rounded-xl p-4 text-xs font-mono text-zinc-200 focus:outline-none">🎬 ¡Hola {usuario}! Bienvenido a MorvehTV 🚀
 
@@ -363,8 +415,9 @@ Tus datos de acceso a Emby son:
 🌐 Servidor: {host}
 👤 Usuario: {usuario}
 🔑 Contraseña: {password}
+📦 Pack: {pack}
+📚 Librerías: {libraries}
 📱 Pantallas: {streams}
-⚡ Perfil: {bitrate}
 📅 Válido hasta: {fecha_expiracion}
 
 ¡Que disfrutes del contenido en alta definición!</textarea>
@@ -372,9 +425,9 @@ Tus datos de acceso a Emby son:
                 </div>
             </div>
 
-            <!-- TAB 9: SETTINGS API -->
+            <!-- TAB 10: SETTINGS API -->
             <div id="tab-settings" class="space-y-6 hidden max-w-3xl mx-auto">
-                <div class="glass-panel p-6 rounded-xl border border-netflix-border space-y-5 shadow-2xl">
+                <div class="glass-netflix p-6 rounded-xl border border-netflix-border space-y-5 shadow-2xl">
                     <h3 class="text-base font-bold text-white flex items-center gap-2"><i class="fa-solid fa-server text-netflix-red"></i> Configuración API Servidor Emby</h3>
                     <div class="space-y-4 text-xs">
                         <div>
@@ -403,10 +456,14 @@ Tus datos de acceso a Emby son:
             <div class="space-y-3 text-xs">
                 <input type="text" id="modalUsername" placeholder="Nombre de usuario" class="w-full bg-netflix-card border border-netflix-border rounded-xl px-3.5 py-2 text-zinc-200">
                 <input type="text" id="modalPassword" placeholder="Contraseña" class="w-full bg-netflix-card border border-netflix-border rounded-xl px-3.5 py-2 text-zinc-200">
-                <select id="modalMonths" class="w-full bg-netflix-card border border-netflix-border rounded-xl px-3 py-2 text-zinc-200">
-                    <option value="1">1 Mes (1 Crédito)</option>
-                    <option value="3">3 Meses (3 Créditos)</option>
-                </select>
+                
+                <div>
+                    <label class="font-semibold text-zinc-300 block mb-1">Seleccionar Pack / Plan</label>
+                    <select id="modalPackSelect" class="w-full bg-netflix-card border border-netflix-border rounded-xl px-3 py-2 text-zinc-200">
+                        <!-- Dynamic Packs Options -->
+                    </select>
+                </div>
+
                 <div class="grid grid-cols-2 gap-2">
                     <select id="modalStreams" class="w-full bg-netflix-card border border-netflix-border rounded-xl px-3 py-2 text-zinc-200">
                         <option value="1">1 Pantalla</option>
@@ -455,8 +512,13 @@ Tus datos de acceso a Emby son:
     <script>
         let db = {
             adminCredits: 250,
+            libraries: ['Películas 4K', 'Series Estreno', 'Anime', 'Documentales', 'Deportes'],
+            packs: [
+                { id: '1', name: 'Pack Mensual Base', months: 1, credits: 1, libraries: ['Películas 4K', 'Series Estreno'] },
+                { id: '2', name: 'Pack VIP Trimestral', months: 3, credits: 3, libraries: ['Películas 4K', 'Series Estreno', 'Anime', 'Documentales', 'Deportes'] }
+            ],
             clients: [
-                { id: '1', username: 'juan_perez', maxStreams: 1, bitrate: '4K UHD', expiresAt: '2026-11-01', isActive: true, notes: 'Telegram @juan' }
+                { id: '1', username: 'juan_perez', maxStreams: 1, packName: 'Pack Mensual Base', libraries: 'Películas 4K, Series Estreno', expiresAt: '2026-11-01', isActive: true, notes: 'Telegram @juan' }
             ],
             resellers: [
                 { id: '1', name: 'Reseller_Carlos', credits: 85, clientsCount: 24 }
@@ -472,6 +534,8 @@ Tus datos de acceso a Emby son:
             updateDashboardStats();
             renderClients();
             renderResellers();
+            renderLibraries();
+            renderPacks();
             loadSettings();
         });
 
@@ -525,6 +589,113 @@ Tus datos de acceso a Emby son:
             document.getElementById('stat-resellers-count').innerText = db.resellers.length;
         }
 
+        function renderLibraries() {
+            const container = document.getElementById('librariesListContainer');
+            const checkboxesContainer = document.getElementById('packLibrariesCheckboxes');
+            if(!container) return;
+
+            container.innerHTML = '';
+            checkboxesContainer.innerHTML = '';
+
+            db.libraries.forEach((lib, index) => {
+                container.innerHTML += `
+                    <div class="flex justify-between items-center bg-[#0f0f11] px-3 py-2 rounded-xl border border-netflix-border">
+                        <span class="text-xs text-zinc-200"><i class="fa-solid fa-folder text-netflix-red mr-2"></i> ${lib}</span>
+                        <button onclick="deleteLibrary(${index})" class="text-rose-400 hover:text-rose-300 text-xs"><i class="fa-solid fa-trash"></i></button>
+                    </div>
+                `;
+
+                checkboxesContainer.innerHTML += `
+                    <label class="flex items-center gap-2 text-zinc-300 cursor-pointer">
+                        <input type="checkbox" name="packLib" value="${lib}" class="rounded border-zinc-700 bg-zinc-900 text-netflix-red focus:ring-0"> ${lib}
+                    </label>
+                `;
+            });
+        }
+
+        function addLibrary() {
+            const input = document.getElementById('newLibraryInput');
+            const val = input.value.trim();
+            if(!val) return;
+            if(!db.libraries.includes(val)) {
+                db.libraries.push(val);
+                saveLocalDB();
+                renderLibraries();
+                input.value = '';
+                logAudit(`Librería añadida: ${val}`);
+            }
+        }
+
+        function deleteLibrary(index) {
+            db.libraries.splice(index, 1);
+            saveLocalDB();
+            renderLibraries();
+        }
+
+        function renderPacks() {
+            const grid = document.getElementById('packsGridContainer');
+            const selectModal = document.getElementById('modalPackSelect');
+            if(!grid) return;
+
+            grid.innerHTML = '';
+            selectModal.innerHTML = '';
+
+            db.packs.forEach(pack => {
+                grid.innerHTML += `
+                    <div class="bg-netflix-card p-4 rounded-xl border border-netflix-border space-y-2">
+                        <div class="flex justify-between items-center">
+                            <h4 class="font-bold text-white text-xs">${pack.name}</h4>
+                            <span class="px-2 py-0.5 bg-netflix-red/20 text-netflix-red rounded text-[10px] font-bold">${pack.months} Mes(es) / ${pack.credits} Cr.</span>
+                        </div>
+                        <p class="text-[11px] text-zinc-400">Librerías: ${pack.libraries.join(', ')}</p>
+                        <button onclick="deletePack('${pack.id}')" class="w-full py-1 bg-rose-600/20 text-rose-400 hover:bg-rose-600 hover:text-white rounded text-[10px] transition">Eliminar Pack</button>
+                    </div>
+                `;
+
+                selectModal.innerHTML += `
+                    <option value="${pack.id}">${pack.name} (${pack.months} Meses - ${pack.credits} Créditos)</option>
+                `;
+            });
+        }
+
+        function saveNewPack() {
+            const name = document.getElementById('packNameInput').value.trim();
+            const months = parseInt(document.getElementById('packMonthsInput').value);
+            const credits = parseInt(document.getElementById('packCreditsInput').value);
+            
+            const selectedLibs = [];
+            document.querySelectorAll('input[name="packLib"]:checked').forEach(cb => {
+                selectedLibs.push(cb.value);
+            });
+
+            if(!name || isNaN(months) || isNaN(credits) || selectedLibs.length === 0) {
+                alert('Por favor, completa todos los campos del pack y selecciona al menos una librería.');
+                return;
+            }
+
+            db.packs.push({
+                id: Date.now().toString(),
+                name,
+                months,
+                credits,
+                libraries: selectedLibs
+            });
+
+            saveLocalDB();
+            renderPacks();
+            logAudit(`Pack creado: ${name} (${months} meses)`);
+            alert('¡Pack creado con éxito!');
+            document.getElementById('packNameInput').value = '';
+            document.getElementById('packMonthsInput').value = '';
+            document.getElementById('packCreditsInput').value = '';
+        }
+
+        function deletePack(id) {
+            db.packs = db.packs.filter(p => p.id !== id);
+            saveLocalDB();
+            renderPacks();
+        }
+
         function renderClients(filterText = '') {
             const tbody = document.getElementById('clientsTableBody');
             tbody.innerHTML = '';
@@ -535,13 +706,12 @@ Tus datos de acceso a Emby son:
                 tr.className = "hover:bg-[#222222] transition";
                 tr.innerHTML = `
                     <td class="px-5 py-3.5 font-semibold text-white">${client.username}</td>
-                    <td class="px-5 py-3.5">${client.maxStreams} Pantalla(s)</td>
-                    <td class="px-5 py-3.5"><span class="px-2 py-0.5 bg-zinc-800 rounded text-xs text-brand-400">${client.bitrate || '4K UHD'}</span></td>
+                    <td class="px-5 py-3.5"><span class="px-2 py-0.5 bg-netflix-red/10 border border-netflix-red/30 text-netflix-red rounded text-xs font-semibold">${client.packName || 'Personalizado'}</span></td>
+                    <td class="px-5 py-3.5 text-xs text-zinc-400">${client.libraries || 'Todas'}</td>
                     <td class="px-5 py-3.5 font-mono text-xs">${client.expiresAt}</td>
                     <td class="px-5 py-3.5"><span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400">Activo</span></td>
-                    <td class="px-5 py-3.5 text-xs text-zinc-500">${client.notes || '-'}</td>
                     <td class="px-5 py-3.5 text-right space-x-2">
-                        <button onclick="openMessageModal('${client.username}', '••••••', '${client.expiresAt}')" class="p-1.5 bg-netflix-card text-zinc-300 rounded-lg text-xs" title="Enviar Datos"><i class="fa-solid fa-paper-plane"></i></button>
+                        <button onclick="openMessageModal('${client.username}', '••••••', '${client.expiresAt}', '${client.packName || 'Pack Estándar'}', '${client.libraries || 'Todas'}')" class="p-1.5 bg-netflix-card text-zinc-300 rounded-lg text-xs" title="Enviar Datos"><i class="fa-solid fa-paper-plane"></i></button>
                         <button onclick="deleteClient('${client.id}')" class="p-1.5 bg-rose-600/20 text-rose-400 rounded-lg text-xs" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
                     </td>
                 `;
@@ -624,7 +794,8 @@ Tus datos de acceso a Emby son:
                 id: Date.now().toString(),
                 username: user,
                 maxStreams: parseInt(streams),
-                bitrate: bitrate,
+                packName: 'Demo Express',
+                libraries: db.libraries.slice(0, 3).join(', '),
                 expiresAt: dateStr,
                 isActive: true,
                 notes: `Demo Pro (${currentDemoHours}h)`
@@ -640,9 +811,10 @@ Tus datos de acceso a Emby son:
                 .replace(/{usuario}/g, user)
                 .replace(/{password}/g, pass)
                 .replace(/{host}/g, serverUrl)
+                .replace(/{pack}/g, 'Demo Express')
+                .replace(/{libraries}/g, db.libraries.slice(0, 3).join(', '))
                 .replace(/{fecha_expiracion}/g, dateStr + ` (${currentDemoHours}h)`)
-                .replace(/{streams}/g, streams + ' pantalla(s)')
-                .replace(/{bitrate}/g, bitrate);
+                .replace(/{streams}/g, streams + ' pantalla(s)');
 
             document.getElementById('demoMessageContent').innerText = currentMsgText;
             document.getElementById('demoOutputBox').classList.remove('hidden');
@@ -664,7 +836,8 @@ Tus datos de acceso a Emby son:
                     id: Date.now().toString() + i,
                     username: user,
                     maxStreams: 1,
-                    bitrate: '4K UHD',
+                    packName: `${months} Mes(es) Masivo`,
+                    libraries: 'Todas',
                     expiresAt: expDate.toISOString().split('T')[0],
                     isActive: true,
                     notes: 'Lote masivo'
@@ -695,10 +868,20 @@ Tus datos de acceso a Emby son:
         async function saveClient() {
             const user = document.getElementById('modalUsername').value;
             const pass = document.getElementById('modalPassword').value;
-            const months = parseInt(document.getElementById('modalMonths').value);
+            const packId = document.getElementById('modalPackSelect').value;
             const streams = parseInt(document.getElementById('modalStreams').value);
-            const bitrate = document.getElementById('modalBitrate').value;
             if (!user) return;
+
+            const pack = db.packs.find(p => p.id === packId) || db.packs[0];
+            const months = pack ? pack.months : 1;
+            const creditsCost = pack ? pack.credits : 1;
+            const packName = pack ? pack.name : 'Pack Estándar';
+            const assignedLibs = pack ? pack.libraries.join(', ') : 'Todas';
+
+            if(db.adminCredits < creditsCost) {
+                alert('No tienes créditos suficientes para asignar este pack.');
+                return;
+            }
 
             const host = localStorage.getItem('embyHost');
             const apiKey = localStorage.getItem('embyApiKey');
@@ -728,7 +911,7 @@ Tus datos de acceso a Emby son:
                 }
             }
 
-            db.adminCredits -= months;
+            db.adminCredits -= creditsCost;
             const expDate = new Date();
             expDate.setMonth(expDate.getMonth() + months);
 
@@ -736,7 +919,8 @@ Tus datos de acceso a Emby son:
                 id: Date.now().toString(),
                 username: user,
                 maxStreams: streams,
-                bitrate: bitrate,
+                packName: packName,
+                libraries: assignedLibs,
                 expiresAt: expDate.toISOString().split('T')[0],
                 isActive: true,
                 notes: document.getElementById('modalNotes').value
@@ -744,7 +928,7 @@ Tus datos de acceso a Emby son:
             saveLocalDB();
             renderClients();
             closeClientModal();
-            logAudit(`Cliente Pro creado: ${user}`);
+            logAudit(`Cliente Pro creado con ${packName}: ${user}`);
         }
 
         function deleteClient(id) {
@@ -762,8 +946,18 @@ Tus datos de acceso a Emby son:
             closeResellerModal();
         }
 
-        function openMessageModal(u, p, d) {
-            currentMsgText = `🎬 Usuario: ${u}\n🔑 Pass: ${p}\n📅 Vence: ${d}`;
+        function openMessageModal(u, p, d, pack, libs) {
+            const host = localStorage.getItem('embyHost') || 'http://tu-servidor:8096';
+            const template = localStorage.getItem('msgTemplate') || document.getElementById('templateText').value;
+            currentMsgText = template
+                .replace(/{usuario}/g, u)
+                .replace(/{password}/g, p)
+                .replace(/{host}/g, host)
+                .replace(/{pack}/g, pack)
+                .replace(/{libraries}/g, libs)
+                .replace(/{streams}/g, '1 pantalla')
+                .replace(/{fecha_expiracion}/g, d);
+
             document.getElementById('modalMessageText').innerText = currentMsgText;
             document.getElementById('messageModal').classList.remove('hidden');
         }
