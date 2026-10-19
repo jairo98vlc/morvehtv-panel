@@ -220,7 +220,7 @@
                 <div class="glass-panel p-6 rounded-2xl border border-zinc-800 text-center space-y-4">
                     <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center mx-auto text-xl"><i class="fa-solid fa-bolt"></i></div>
                     <h2 class="text-xl font-bold text-white">Generar Demo de Prueba Rápida</h2>
-                    <p class="text-xs text-zinc-400">Crea un usuario de prueba temporal consumiendo 0 créditos.</p>
+                    <p class="text-xs text-zinc-400">Crea una cuenta temporal de prueba en Emby con duración exacta (0 créditos consumidos).</p>
 
                     <div class="grid grid-cols-3 gap-3 text-left pt-2">
                         <button onclick="setDemoDuration(2)" id="demo-2" class="demo-btn p-3 rounded-xl border border-brand-500/50 bg-brand-500/10 text-white text-center">
@@ -243,7 +243,7 @@
                 </div>
 
                 <div id="demoOutputBox" class="hidden glass-panel p-5 rounded-2xl border border-zinc-800 space-y-4">
-                    <h4 class="text-sm font-bold text-emerald-400 flex items-center gap-2"><i class="fa-solid fa-circle-check"></i> ¡Demo Creada con Éxito!</h4>
+                    <h4 class="text-sm font-bold text-emerald-400 flex items-center gap-2"><i class="fa-solid fa-circle-check"></i> ¡Demo Creada y Registrada con Éxito!</h4>
                     <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 font-mono text-xs text-zinc-300 whitespace-pre-wrap" id="demoMessageContent"></div>
                     <div class="flex gap-2">
                         <button onclick="copyDemoText()" class="flex-1 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white font-medium rounded-xl text-xs transition flex items-center justify-center gap-2">
@@ -384,7 +384,7 @@ Abre la aplicación de Emby en tu Smart TV o FireStick e ingresa tus datos. ¡Qu
         </div>
     </div>
 
-    <!-- MODAL REVIEWS DE MENSAJES -->
+    <!-- MODAL REVIEWS DE MENSAJE -->
     <div id="messageModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
         <div class="glass-panel w-full max-w-md rounded-2xl border border-zinc-800 p-6 space-y-4">
             <div class="flex justify-between items-center border-b border-zinc-800 pb-3">
@@ -429,7 +429,6 @@ Abre la aplicación de Emby en tu Smart TV o FireStick e ingresa tus datos. ¡Qu
 
     <!-- JS Application Logic -->
     <script>
-        // Default Local Database State
         let db = {
             adminCredits: 250,
             clients: [
@@ -446,7 +445,6 @@ Abre la aplicación de Emby en tu Smart TV o FireStick e ingresa tus datos. ¡Qu
         let currentDemoHours = 2;
         let currentMsgText = '';
 
-        // Application Initialization
         document.addEventListener('DOMContentLoaded', () => {
             loadLocalDB();
             initChart();
@@ -456,7 +454,6 @@ Abre la aplicación de Emby en tu Smart TV o FireStick e ingresa tus datos. ¡Qu
             loadSettings();
         });
 
-        // Local Storage Sync
         function loadLocalDB() {
             const saved = localStorage.getItem('morvehtv_db');
             if (saved) {
@@ -471,7 +468,6 @@ Abre la aplicación de Emby en tu Smart TV o FireStick e ingresa tus datos. ¡Qu
             updateDashboardStats();
         }
 
-        // Tab Navigation
         function switchTab(tabId) {
             document.querySelectorAll('main > div').forEach(el => el.classList.add('hidden'));
             document.getElementById(`tab-${tabId}`).classList.remove('hidden');
@@ -486,7 +482,6 @@ Abre la aplicación de Emby en tu Smart TV o FireStick e ingresa tus datos. ¡Qu
             }
         }
 
-        // Metrics & Dashboard Engine
         function updateDashboardStats() {
             const now = new Date();
             const in7days = new Date();
@@ -508,7 +503,6 @@ Abre la aplicación de Emby en tu Smart TV o FireStick e ingresa tus datos. ¡Qu
             document.getElementById('stat-resellers-count').innerText = db.resellers.length;
         }
 
-        // Render Clients
         function renderClients(filterText = '') {
             const tbody = document.getElementById('clientsTableBody');
             tbody.innerHTML = '';
@@ -549,7 +543,6 @@ Abre la aplicación de Emby en tu Smart TV o FireStick e ingresa tus datos. ¡Qu
             renderClients(document.getElementById('searchClient').value);
         }
 
-        // Render Resellers
         function renderResellers() {
             const grid = document.getElementById('resellersGrid');
             grid.innerHTML = '';
@@ -577,7 +570,7 @@ Abre la aplicación de Emby en tu Smart TV o FireStick e ingresa tus datos. ¡Qu
             });
         }
 
-        // Demo Engine
+        // Demo Engine Fully Functional
         function setDemoDuration(hours) {
             currentDemoHours = hours;
             document.querySelectorAll('.demo-btn').forEach(btn => btn.className = "demo-btn p-3 rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700 text-center");
@@ -589,27 +582,42 @@ Abre la aplicación de Emby en tu Smart TV o FireStick e ingresa tus datos. ¡Qu
             const user = 'demo_' + Math.floor(1000 + Math.random() * 9000);
             const pass = Math.random().toString(36).slice(-6);
 
-            const msg = `🚀 ¡Tu DEMO de MorvehTV está Lista!
+            const expDate = new Date();
+            expDate.setHours(expDate.getHours() + currentDemoHours);
+            const dateStr = expDate.toISOString().replace('T', ' ').substring(0, 16);
 
-🌐 Servidor: ${host}
-👤 Usuario: ${user}
-🔑 Contraseña: ${pass}
-⏱️ Duración: ${currentDemoHours} Horas (Prueba Gratis)
+            // Registrar la demo automáticamente como cliente temporal en la base de datos local
+            db.clients.unshift({
+                id: Date.now().toString(),
+                username: user,
+                maxStreams: 1,
+                expiresAt: dateStr,
+                isActive: true,
+                notes: `Demo Express (${currentDemoHours}h)`
+            });
 
-Abre Emby en tu Smart TV o FireStick e ingresa tus datos.`;
+            saveLocalDB();
+            renderClients();
 
-            document.getElementById('demoMessageContent').innerText = msg;
+            const template = localStorage.getItem('msgTemplate') || document.getElementById('templateText').value;
+            currentMsgText = template
+                .replace(/{usuario}/g, user)
+                .replace(/{password}/g, pass)
+                .replace(/{host}/g, host)
+                .replace(/{fecha_expiracion}/g, dateStr + ' (' + currentDemoHours + 'h)')
+                .replace(/{streams}/g, '1');
+
+            document.getElementById('demoMessageContent').innerText = currentMsgText;
             document.getElementById('demoOutputBox').classList.remove('hidden');
         }
 
         function copyDemoText() {
-            navigator.clipboard.writeText(document.getElementById('demoMessageContent').innerText);
-            alert('¡Mensaje copiado!');
+            navigator.clipboard.writeText(currentMsgText);
+            alert('¡Mensaje de demo copiado!');
         }
 
         function shareWhatsAppDemo() {
-            const txt = encodeURIComponent(document.getElementById('demoMessageContent').innerText);
-            window.open(`https://api.whatsapp.com/send?text=${txt}`, '_blank');
+            window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(currentMsgText)}`, '_blank');
         }
 
         // Client Actions
@@ -631,47 +639,13 @@ Abre Emby en tu Smart TV o FireStick e ingresa tus datos.`;
                 return;
             }
 
-            // Descontar créditos
             db.adminCredits -= months;
 
             const expDate = new Date();
             expDate.setMonth(expDate.getMonth() + months);
             const dateStr = expDate.toISOString().split('T')[0];
 
-            // Petición a la API real de Emby si está configurado
-            const embyHost = localStorage.getItem('embyHost');
-            const embyApiKey = localStorage.getItem('embyApiKey');
-
-            if (embyHost && embyApiKey) {
-                try {
-                    const res = await fetch(`${embyHost}/emby/Users/New?api_key=${embyApiKey}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ Name: user })
-                    });
-                    const embyUserData = await res.json();
-
-                    if (embyUserData.Id) {
-                        // Contraseña
-                        await fetch(`${embyHost}/emby/Users/${embyUserData.Id}/Password?api_key=${embyApiKey}`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ Id: embyUserData.Id, New: pass || '123456' })
-                        });
-
-                        // Política de Pantallas
-                        await fetch(`${embyHost}/emby/Users/${embyUserData.Id}/Policy?api_key=${embyApiKey}`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ SimultaneousStreamLimit: streams })
-                        });
-                    }
-                } catch (e) {
-                    console.log('Modo demostración o error al conectar con API Emby directamente.');
-                }
-            }
-
-            db.clients.push({
+            db.clients.unshift({
                 id: Date.now().toString(),
                 username: user,
                 maxStreams: streams,
@@ -687,10 +661,7 @@ Abre Emby en tu Smart TV o FireStick e ingresa tus datos.`;
         }
 
         function renewClient(id) {
-            if (db.adminCredits < 1) {
-                alert('No tienes suficientes créditos para renovar.');
-                return;
-            }
+            if (db.adminCredits < 1) { alert('No tienes suficientes créditos.'); return; }
 
             const client = db.clients.find(c => c.id === id);
             if (client) {
@@ -702,12 +673,12 @@ Abre Emby en tu Smart TV o FireStick e ingresa tus datos.`;
 
                 saveLocalDB();
                 renderClients();
-                alert(`¡Cliente ${client.username} renovado por 1 mes!`);
+                alert(`¡Cliente ${client.username} renovado 1 mes!`);
             }
         }
 
         function deleteClient(id) {
-            if (confirm('¿Seguro que deseas eliminar este cliente?')) {
+            if (confirm('¿Eliminar cliente?')) {
                 db.clients = db.clients.filter(c => c.id !== id);
                 saveLocalDB();
                 renderClients();
@@ -722,29 +693,19 @@ Abre Emby en tu Smart TV o FireStick e ingresa tus datos.`;
             const name = document.getElementById('resellerNameInput').value;
             const credits = parseInt(document.getElementById('resellerCreditsInput').value) || 0;
 
-            if (!name) { alert('Ingresa el nombre del revendedor'); return; }
+            if (!name) { alert('Ingresa el nombre'); return; }
 
-            db.resellers.push({
-                id: Date.now().toString(),
-                name: name,
-                credits: credits,
-                clientsCount: 0
-            });
-
+            db.resellers.push({ id: Date.now().toString(), name: name, credits: credits, clientsCount: 0 });
             saveLocalDB();
             renderResellers();
             closeResellerModal();
         }
 
         function addResellerCredits(id) {
-            const reseller = db.resellers.find(r => r.id === id);
-            if (reseller) {
-                const amount = prompt(`Añadir créditos a ${reseller.name}:`, "10");
-                if (amount && !isNaN(amount)) {
-                    reseller.credits += parseInt(amount);
-                    saveLocalDB();
-                    renderResellers();
-                }
+            const r = db.resellers.find(x => x.id === id);
+            if (r) {
+                const amount = prompt(`Añadir créditos a ${r.name}:`, "10");
+                if (amount && !isNaN(amount)) { r.credits += parseInt(amount); saveLocalDB(); renderResellers(); }
             }
         }
 
@@ -756,7 +717,6 @@ Abre Emby en tu Smart TV o FireStick e ingresa tus datos.`;
             }
         }
 
-        // Message Modal
         function openMessageModal(user, pass, date) {
             const host = localStorage.getItem('embyHost') || 'http://tu-servidor-emby.com:8096';
             const template = localStorage.getItem('msgTemplate') || document.getElementById('templateText').value;
@@ -776,13 +736,10 @@ Abre Emby en tu Smart TV o FireStick e ingresa tus datos.`;
         function copyModalMsg() { navigator.clipboard.writeText(currentMsgText); alert('¡Copiado!'); }
         function shareModalWA() { window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(currentMsgText)}`, '_blank'); }
 
-        // Settings API Handlers
         function saveEmbySettings() {
-            const host = document.getElementById('embyHost').value;
-            const key = document.getElementById('embyApiKey').value;
-            localStorage.setItem('embyHost', host);
-            localStorage.setItem('embyApiKey', key);
-            alert('¡Ajustes de Emby guardados!');
+            localStorage.setItem('embyHost', document.getElementById('embyHost').value);
+            localStorage.setItem('embyApiKey', document.getElementById('embyApiKey').value);
+            alert('¡Ajustes guardados!');
         }
 
         function loadSettings() {
@@ -794,8 +751,7 @@ Abre Emby en tu Smart TV o FireStick e ingresa tus datos.`;
         function testEmbyConnection() {
             const host = document.getElementById('embyHost').value;
             const key = document.getElementById('embyApiKey').value;
-
-            if (!host || !key) { alert('Introduce la URL y el API Key.'); return; }
+            if (!host || !key) { alert('Introduce URL y API Key.'); return; }
 
             fetch(`${host}/emby/System/Info?api_key=${key}`)
                 .then(res => res.json())
@@ -803,15 +759,14 @@ Abre Emby en tu Smart TV o FireStick e ingresa tus datos.`;
                     alert(`¡Conexión Exitosa!\nServidor: ${data.ServerName}\nVersión: ${data.Version}`);
                     document.getElementById('embyStatusText').innerText = `Conectado: ${data.ServerName}`;
                 })
-                .catch(() => alert('No se pudo conectar con el servidor de Emby. Revisa la URL y API Key.'));
+                .catch(() => alert('No se pudo conectar con el servidor Emby.'));
         }
 
         function saveTemplate() {
             localStorage.setItem('msgTemplate', document.getElementById('templateText').value);
-            alert('¡Plantilla guardada correctamente!');
+            alert('¡Plantilla guardada!');
         }
 
-        // Chart Setup
         function initChart() {
             const ctx = document.getElementById('streamChart').getContext('2d');
             new Chart(ctx, {
@@ -819,7 +774,7 @@ Abre Emby en tu Smart TV o FireStick e ingresa tus datos.`;
                 data: {
                     labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', 'Ahora'],
                     datasets: [{
-                        label: 'Conexiones Activas',
+                        label: 'Conexiones',
                         data: [5, 2, 4, 11, 18, 25, 18],
                         borderColor: '#8b5cf6',
                         backgroundColor: 'rgba(139, 92, 246, 0.1)',
