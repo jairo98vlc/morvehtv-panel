@@ -1,0 +1,1349 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MorvehTV - Enterprise Emby Reseller Panel</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        morveh: {
+                            50: '#f5f3ff',
+                            100: '#ede9fe',
+                            200: '#ddd6fe',
+                            300: '#c4b5fd',
+                            400: '#a78bfa',
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                            700: '#6d28d9',
+                            800: '#5b21b6',
+                            900: '#4c1d95',
+                            accent: '#a855f7',
+                            neon: '#c084fc',
+                            darkBg: '#09090b',
+                            cardBg: '#121217',
+                            borderBg: '#272730'
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- QR Code Generator -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap');
+        body {
+            font-family: 'Plus Jakarta Sans', sans-serif;
+            background-color: #09090b;
+            color: #f3f4f6;
+        }
+        .glass-panel {
+            background: rgba(18, 18, 23, 0.75);
+            backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .glass-card {
+            background: rgba(24, 24, 32, 0.6);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(139, 92, 246, 0.15);
+        }
+        .neon-glow-violet {
+            box-shadow: 0 0 25px -5px rgba(139, 92, 246, 0.35);
+        }
+        .neon-border {
+            border-color: rgba(168, 85, 247, 0.4);
+        }
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 6px;
+            height: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #09090b;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #272730;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #6d28d9;
+        }
+        .pulse-dot {
+            box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7);
+            animation: pulse-green 2s infinite;
+        }
+        @keyframes pulse-green {
+            0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.7); }
+            70% { transform: scale(1); box-shadow: 0 0 0 8px rgba(34, 197, 94, 0); }
+            100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(34, 197, 94, 0); }
+        }
+    </style>
+</head>
+<body class="h-screen flex overflow-hidden antialiased">
+
+    <!-- Mobile Sidebar Backdrop -->
+    <div id="mobileBackdrop" onclick="toggleSidebar()" class="fixed inset-0 bg-black/80 z-40 hidden md:hidden transition-opacity"></div>
+
+    <!-- MAIN SIDEBAR -->
+    <aside id="sidebar" class="fixed md:static inset-y-0 left-0 w-72 bg-[#0d0d12] border-r border-morveh-borderBg z-50 flex flex-col transition-transform duration-300 transform -translate-x-full md:translate-x-0">
+        <!-- Brand Header -->
+        <div class="h-20 flex items-center justify-between px-6 border-b border-morveh-borderBg/60">
+            <div class="flex items-center gap-3">
+                <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-morveh-800 via-morveh-600 to-morveh-accent flex items-center justify-center text-white shadow-lg shadow-morveh-600/40">
+                    <i data-lucide="tv" class="w-6 h-6"></i>
+                </div>
+                <div>
+                    <h1 class="text-xl font-black tracking-wider text-white flex items-center gap-1">
+                        MORVEH<span class="text-morveh-accent">TV</span>
+                    </h1>
+                    <span class="text-[10px] font-semibold uppercase tracking-widest text-morveh-400 bg-morveh-900/50 px-2 py-0.5 rounded border border-morveh-700/50">Emby Pro Panel</span>
+                </div>
+            </div>
+            <button onclick="toggleSidebar()" class="md:hidden text-gray-400 hover:text-white">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+        </div>
+
+        <!-- User Balance Badge -->
+        <div class="p-4 mx-4 my-4 rounded-xl glass-card flex items-center justify-between border border-morveh-600/30">
+            <div class="flex items-center gap-3">
+                <div class="p-2.5 rounded-lg bg-morveh-600/20 text-morveh-accent">
+                    <i data-lucide="coins" class="w-5 h-5"></i>
+                </div>
+                <div>
+                    <p class="text-xs text-gray-400">Mis Créditos</p>
+                    <p class="text-lg font-bold text-white" id="userCreditDisplay">1,450.00 <span class="text-xs font-normal text-morveh-400">CR</span></p>
+                </div>
+            </div>
+            <button onclick="openModal('creditAddModal')" class="p-2 rounded-lg bg-morveh-600 hover:bg-morveh-500 text-white transition-all shadow-md shadow-morveh-600/30" title="Recargar Créditos">
+                <i data-lucide="plus" class="w-4 h-4"></i>
+            </button>
+        </div>
+
+        <!-- Navigation Links -->
+        <nav class="flex-1 px-4 space-y-1.5 overflow-y-auto">
+            <a href="#" onclick="switchTab('dashboard')" id="nav-dashboard" class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all text-white bg-morveh-600/20 border border-morveh-500/30 text-morveh-accent">
+                <i data-lucide="layout-dashboard" class="w-5 h-5"></i> Dashboard
+            </a>
+            <a href="#" onclick="switchTab('servers')" id="nav-servers" class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all text-gray-400 hover:text-white hover:bg-white/5">
+                <i data-lucide="server" class="w-5 h-5"></i> Servidores Emby
+                <span class="ml-auto text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full font-bold">3 Online</span>
+            </a>
+            <a href="#" onclick="switchTab('resellers')" id="nav-resellers" class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all text-gray-400 hover:text-white hover:bg-white/5">
+                <i data-lucide="users" class="w-5 h-5"></i> Revendedores
+            </a>
+            <a href="#" onclick="switchTab('clients')" id="nav-clients" class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all text-gray-400 hover:text-white hover:bg-white/5">
+                <i data-lucide="user-check" class="w-5 h-5"></i> Clientes Emby
+            </a>
+            <a href="#" onclick="switchTab('demo')" id="nav-demo" class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all text-gray-400 hover:text-white hover:bg-white/5">
+                <i data-lucide="zap" class="w-5 h-5 text-amber-400"></i> Generar Demos
+                <span class="ml-auto text-[10px] bg-amber-500/20 text-amber-300 border border-amber-500/30 px-2 py-0.5 rounded-md uppercase font-bold">Express</span>
+            </a>
+            <a href="#" onclick="switchTab('packages')" id="nav-packages" class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all text-gray-400 hover:text-white hover:bg-white/5">
+                <i data-lucide="package" class="w-5 h-5"></i> Paquetes & Créditos
+            </a>
+            <a href="#" onclick="switchTab('templates')" id="nav-templates" class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all text-gray-400 hover:text-white hover:bg-white/5">
+                <i data-lucide="message-square" class="w-5 h-5"></i> Plantillas Mensajes
+            </a>
+            <a href="#" onclick="switchTab('logs')" id="nav-logs" class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all text-gray-400 hover:text-white hover:bg-white/5">
+                <i data-lucide="file-text" class="w-5 h-5"></i> Auditoría & Logs
+            </a>
+            <a href="#" onclick="switchTab('settings')" id="nav-settings" class="nav-item flex items-center gap-3 px-4 py-3 text-sm font-medium rounded-xl transition-all text-gray-400 hover:text-white hover:bg-white/5">
+                <i data-lucide="settings" class="w-5 h-5"></i> Ajustes Sistema
+            </a>
+        </nav>
+
+        <!-- Sidebar Footer -->
+        <div class="p-4 border-t border-morveh-borderBg/60 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 rounded-full bg-morveh-700 flex items-center justify-center font-bold text-sm text-white">
+                    AD
+                </div>
+                <div>
+                    <p class="text-sm font-semibold text-white">Admin Master</p>
+                    <p class="text-xs text-gray-500">master@morvehtv.com</p>
+                </div>
+            </div>
+            <button class="text-gray-400 hover:text-rose-400 p-2 rounded-lg transition-colors" title="Cerrar Sesión">
+                <i data-lucide="log-out" class="w-5 h-5"></i>
+            </button>
+        </div>
+    </aside>
+
+    <!-- CONTENT WRAPPER -->
+    <div class="flex-1 flex flex-col h-screen overflow-hidden bg-[#09090b]">
+
+        <!-- TOP BAR -->
+        <header class="h-20 border-b border-morveh-borderBg/60 glass-panel px-6 flex items-center justify-between z-30">
+            <div class="flex items-center gap-4">
+                <button onclick="toggleSidebar()" class="md:hidden text-gray-400 hover:text-white p-2 rounded-lg bg-morveh-cardBg">
+                    <i data-lucide="menu" class="w-6 h-6"></i>
+                </button>
+                <div class="hidden sm:flex items-center gap-2 bg-[#121217] border border-morveh-borderBg px-3 py-1.5 rounded-full text-xs text-gray-400">
+                    <span class="w-2 h-2 rounded-full bg-emerald-500 pulse-dot"></span>
+                    <span>Emby Cluster: <strong class="text-emerald-400 font-semibold">100% Funcional</strong></span>
+                </div>
+            </div>
+
+            <div class="flex items-center gap-3">
+                <!-- Quick Demo Button -->
+                <button onclick="switchTab('demo')" class="hidden sm:flex items-center gap-2 px-3.5 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-bold transition-all">
+                    <i data-lucide="zap" class="w-4 h-4"></i> Demo 1-Click
+                </button>
+
+                <!-- New Client Button -->
+                <button onclick="openModal('createClientModal')" class="flex items-center gap-2 px-4 py-2 rounded-xl bg-gradient-to-r from-morveh-600 to-morveh-accent hover:from-morveh-500 hover:to-morveh-400 text-white text-xs font-bold shadow-lg shadow-morveh-600/30 transition-all">
+                    <i data-lucide="user-plus" class="w-4 h-4"></i> Crear Cliente Emby
+                </button>
+
+                <!-- Notifications -->
+                <div class="relative">
+                    <button id="notifBtn" onclick="toggleNotifications()" class="p-2.5 rounded-xl bg-morveh-cardBg border border-morveh-borderBg text-gray-400 hover:text-white relative">
+                        <i data-lucide="bell" class="w-5 h-5"></i>
+                        <span class="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-morveh-accent"></span>
+                    </button>
+                    <!-- Notification Dropdown -->
+                    <div id="notifMenu" class="hidden absolute right-0 mt-3 w-80 bg-[#121217] border border-morveh-borderBg rounded-2xl shadow-2xl p-4 z-50">
+                        <div class="flex justify-between items-center mb-3">
+                            <h4 class="text-sm font-bold text-white">Notificaciones</h4>
+                            <span class="text-[10px] bg-morveh-600/30 text-morveh-300 px-2 py-0.5 rounded">3 Nuevas</span>
+                        </div>
+                        <div class="space-y-2 text-xs">
+                            <div class="p-2.5 rounded-lg bg-white/5 border border-white/5 hover:border-morveh-500/30">
+                                <p class="text-white font-medium">Nueva Venta de Créditos</p>
+                                <p class="text-gray-400 text-[11px]">Reseller 'JuanPerez' compró 100 créditos.</p>
+                                <span class="text-[10px] text-gray-500">Hace 5 min</span>
+                            </div>
+                            <div class="p-2.5 rounded-lg bg-white/5 border border-white/5 hover:border-morveh-500/30">
+                                <p class="text-amber-400 font-medium">Cuenta por Vencer</p>
+                                <p class="text-gray-400 text-[11px]">Cliente 'Carlos_Emby' vence en 24h.</p>
+                                <span class="text-[10px] text-gray-500">Hace 1 hora</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- DYNAMIC MAIN SECTION -->
+        <main class="flex-1 overflow-y-auto p-4 md:p-8 space-y-6">
+
+            <!-- TAB 1: DASHBOARD -->
+            <section id="tab-dashboard" class="tab-content space-y-6">
+                <!-- Banner Welcome -->
+                <div class="relative overflow-hidden rounded-3xl p-6 md:p-8 bg-gradient-to-r from-morveh-900 via-morveh-800 to-[#121217] border border-morveh-600/30 shadow-2xl">
+                    <div class="absolute -right-10 -bottom-10 w-64 h-64 bg-morveh-accent/10 rounded-full blur-3xl pointer-events-none"></div>
+                    <div class="relative z-10 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                        <div>
+                            <span class="text-xs font-extrabold uppercase tracking-widest text-morveh-accent bg-morveh-500/10 border border-morveh-500/20 px-3 py-1 rounded-full">Panel de Control Global</span>
+                            <h2 class="text-2xl md:text-3xl font-black text-white mt-2">Bienvenido a MorvehTV Panel</h2>
+                            <p class="text-sm text-gray-300 mt-1 max-w-2xl">Gestión centralizada de nodos Emby, revendedores y clientes con transmisión multicanal de alto rendimiento.</p>
+                        </div>
+                        <div class="flex gap-3">
+                            <button onclick="switchTab('demo')" class="px-4 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs flex items-center gap-2 shadow-lg transition-all">
+                                <i data-lucide="zap" class="w-4 h-4"></i> Crear Demo Rápido
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Metrics Grid -->
+                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <div class="p-5 rounded-2xl glass-panel border border-morveh-borderBg hover:border-morveh-500/40 transition-all">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Clientes Activos</span>
+                            <div class="p-2.5 rounded-xl bg-emerald-500/10 text-emerald-400">
+                                <i data-lucide="users" class="w-5 h-5"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex items-baseline justify-between">
+                            <h3 class="text-2xl font-black text-white" id="statActiveClients">1,284</h3>
+                            <span class="text-xs text-emerald-400 font-bold flex items-center gap-0.5">+12.5% <i data-lucide="trending-up" class="w-3.5 h-3.5"></i></span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">42 creados esta semana</p>
+                    </div>
+
+                    <div class="p-5 rounded-2xl glass-panel border border-morveh-borderBg hover:border-morveh-500/40 transition-all">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Streams Simultáneos</span>
+                            <div class="p-2.5 rounded-xl bg-morveh-600/20 text-morveh-accent">
+                                <i data-lucide="play-circle" class="w-5 h-5"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex items-baseline justify-between">
+                            <h3 class="text-2xl font-black text-white">418 <span class="text-sm font-normal text-gray-400">/ 800</span></h3>
+                            <span class="text-xs text-morveh-accent font-bold">52% Carga</span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Nodos de Transcodificación OK</p>
+                    </div>
+
+                    <div class="p-5 rounded-2xl glass-panel border border-morveh-borderBg hover:border-morveh-500/40 transition-all">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Revendedores</span>
+                            <div class="p-2.5 rounded-xl bg-blue-500/10 text-blue-400">
+                                <i data-lucide="user-check" class="w-5 h-5"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex items-baseline justify-between">
+                            <h3 class="text-2xl font-black text-white">38</h3>
+                            <span class="text-xs text-blue-400 font-bold">+3 este mes</span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Sub-revendedores activos</p>
+                    </div>
+
+                    <div class="p-5 rounded-2xl glass-panel border border-morveh-borderBg hover:border-morveh-500/40 transition-all">
+                        <div class="flex items-center justify-between">
+                            <span class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Venta de Créditos</span>
+                            <div class="p-2.5 rounded-xl bg-amber-500/10 text-amber-400">
+                                <i data-lucide="dollar-sign" class="w-5 h-5"></i>
+                            </div>
+                        </div>
+                        <div class="mt-4 flex items-baseline justify-between">
+                            <h3 class="text-2xl font-black text-white">$4,850 <span class="text-xs text-gray-400">USD</span></h3>
+                            <span class="text-xs text-amber-400 font-bold">+18.2%</span>
+                        </div>
+                        <p class="text-xs text-gray-500 mt-1">Facturación mes actual</p>
+                    </div>
+                </div>
+
+                <!-- Charts Section -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <!-- Stream Activity Chart -->
+                    <div class="lg:col-span-2 p-6 rounded-2xl glass-panel border border-morveh-borderBg">
+                        <div class="flex justify-between items-center mb-6">
+                            <div>
+                                <h3 class="text-lg font-bold text-white">Tráfico & Transmisiones Activas</h3>
+                                <p class="text-xs text-gray-400">Carga de reproducción en tiempo real en clusters Emby</p>
+                            </div>
+                            <select class="bg-morveh-cardBg border border-morveh-borderBg text-xs text-gray-300 rounded-lg px-3 py-1.5 focus:outline-none">
+                                <option>Últimas 24 Horas</option>
+                                <option>Últimos 7 Días</option>
+                            </select>
+                        </div>
+                        <div class="h-64">
+                            <canvas id="streamsChart"></canvas>
+                        </div>
+                    </div>
+
+                    <!-- Server Cluster Status Widget -->
+                    <div class="p-6 rounded-2xl glass-panel border border-morveh-borderBg flex flex-col justify-between">
+                        <div>
+                            <h3 class="text-lg font-bold text-white mb-1">Estado de Nodos Emby</h3>
+                            <p class="text-xs text-gray-400 mb-4">Salud y latencia del servidor en tiempo real</p>
+                            <div class="space-y-4">
+                                <div class="p-3 rounded-xl bg-white/5 border border-white/5 flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <span class="w-3 h-3 rounded-full bg-emerald-500 pulse-dot"></span>
+                                        <div>
+                                            <p class="text-xs font-bold text-white">Nodo 01 - USA East (Emby 4.8)</p>
+                                            <p class="text-[10px] text-gray-400">CPU: 34% | RAM: 12.4GB</p>
+                                        </div>
+                                    </div>
+                                    <span class="text-xs font-mono font-bold text-emerald-400">18ms</span>
+                                </div>
+                                <div class="p-3 rounded-xl bg-white/5 border border-white/5 flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <span class="w-3 h-3 rounded-full bg-emerald-500 pulse-dot"></span>
+                                        <div>
+                                            <p class="text-xs font-bold text-white">Nodo 02 - EU Germany</p>
+                                            <p class="text-[10px] text-gray-400">CPU: 58% | RAM: 22.1GB</p>
+                                        </div>
+                                    </div>
+                                    <span class="text-xs font-mono font-bold text-emerald-400">42ms</span>
+                                </div>
+                                <div class="p-3 rounded-xl bg-white/5 border border-white/5 flex items-center justify-between">
+                                    <div class="flex items-center gap-3">
+                                        <span class="w-3 h-3 rounded-full bg-emerald-500 pulse-dot"></span>
+                                        <div>
+                                            <p class="text-xs font-bold text-white">Nodo 03 - LATAM VIP</p>
+                                            <p class="text-[10px] text-gray-400">CPU: 22% | RAM: 8.5GB</p>
+                                        </div>
+                                    </div>
+                                    <span class="text-xs font-mono font-bold text-emerald-400">25ms</span>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="switchTab('servers')" class="w-full mt-4 py-2 rounded-xl bg-morveh-cardBg hover:bg-morveh-600/30 text-morveh-accent border border-morveh-600/40 text-xs font-bold transition-all text-center">
+                            Gestionar Clusters
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Expiring Accounts & Quick Actions -->
+                <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+                    <div class="lg:col-span-2 p-6 rounded-2xl glass-panel border border-morveh-borderBg">
+                        <div class="flex justify-between items-center mb-4">
+                            <h3 class="text-lg font-bold text-white">Cuentas Próximas a Vencer (48h)</h3>
+                            <button onclick="switchTab('clients')" class="text-xs text-morveh-accent hover:underline">Ver Todos los Clientes</button>
+                        </div>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-xs">
+                                <thead>
+                                    <tr class="text-gray-400 border-b border-morveh-borderBg">
+                                        <th class="pb-3 font-semibold">Usuario</th>
+                                        <th class="pb-3 font-semibold">Revendedor</th>
+                                        <th class="pb-3 font-semibold">Vencimiento</th>
+                                        <th class="pb-3 font-semibold text-right">Acción</th>
+                                    </tr>
+                                </thead>
+                                <tbody class="divide-y divide-morveh-borderBg/40" id="expiringTable">
+                                    <!-- Dynamic content injected -->
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+
+                    <!-- Top Resellers -->
+                    <div class="p-6 rounded-2xl glass-panel border border-morveh-borderBg">
+                        <h3 class="text-lg font-bold text-white mb-4">Top Revendedores</h3>
+                        <div class="space-y-3" id="topResellersList">
+                            <!-- Injected by JS -->
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 2: SERVERS -->
+            <section id="tab-servers" class="tab-content hidden space-y-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h2 class="text-2xl font-black text-white">Cluster de Servidores Emby</h2>
+                        <p class="text-xs text-gray-400">Monitoreo de nodos de transmisión, claves API y equilibrio de carga.</p>
+                    </div>
+                    <button onclick="alert('Función de sincronización de cluster ejecutada.')" class="px-4 py-2 rounded-xl bg-morveh-600 hover:bg-morveh-500 text-white text-xs font-bold flex items-center gap-2 shadow-lg shadow-morveh-600/30">
+                        <i data-lucide="refresh-cw" class="w-4 h-4"></i> Test Conexión Nodos
+                    </button>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6" id="serverNodesGrid">
+                    <!-- Dynamic Server Cards Injected Here -->
+                </div>
+            </section>
+
+            <!-- TAB 3: RESELLERS -->
+            <section id="tab-resellers" class="tab-content hidden space-y-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h2 class="text-2xl font-black text-white">Gestión de Revendedores</h2>
+                        <p class="text-xs text-gray-400">Administra tu red de distribuidores, créditos y límites de paquetes.</p>
+                    </div>
+                    <button onclick="openModal('createResellerModal')" class="px-4 py-2 rounded-xl bg-morveh-accent hover:bg-morveh-500 text-white text-xs font-bold flex items-center gap-2 shadow-lg shadow-morveh-accent/30">
+                        <i data-lucide="user-plus" class="w-4 h-4"></i> Nuevo Revendedor
+                    </button>
+                </div>
+
+                <!-- Resellers Table -->
+                <div class="p-6 rounded-2xl glass-panel border border-morveh-borderBg overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead>
+                            <tr class="text-gray-400 border-b border-morveh-borderBg">
+                                <th class="pb-3 font-semibold">Revendedor</th>
+                                <th class="pb-3 font-semibold">Créditos</th>
+                                <th class="pb-3 font-semibold">Clientes Activos</th>
+                                <th class="pb-3 font-semibold">Margen Ganancia</th>
+                                <th class="pb-3 font-semibold">Estado</th>
+                                <th class="pb-3 font-semibold text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-morveh-borderBg/40" id="resellersTable">
+                            <!-- Injected via JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- TAB 4: CLIENTS -->
+            <section id="tab-clients" class="tab-content hidden space-y-6">
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
+                    <div>
+                        <h2 class="text-2xl font-black text-white">Clientes Emby</h2>
+                        <p class="text-xs text-gray-400">Base de datos unificada de clientes con control de vencimiento y permisos.</p>
+                    </div>
+                    <div class="flex items-center gap-2">
+                        <button onclick="openModal('createClientModal')" class="px-4 py-2 rounded-xl bg-gradient-to-r from-morveh-600 to-morveh-accent text-white text-xs font-bold flex items-center gap-2 shadow-lg">
+                            <i data-lucide="plus" class="w-4 h-4"></i> Nuevo Cliente
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Search & Filters -->
+                <div class="p-4 rounded-2xl glass-panel border border-morveh-borderBg flex flex-col md:flex-row gap-4 justify-between items-center">
+                    <div class="relative w-full md:w-96">
+                        <i data-lucide="search" class="w-4 h-4 absolute left-3 top-3 text-gray-400"></i>
+                        <input type="text" id="clientSearchInput" oninput="filterClients()" placeholder="Buscar por usuario, notas o revendedor..." class="w-full pl-9 pr-4 py-2 bg-morveh-cardBg border border-morveh-borderBg rounded-xl text-xs text-white focus:outline-none focus:border-morveh-accent">
+                    </div>
+                    <div class="flex items-center gap-2 w-full md:w-auto overflow-x-auto">
+                        <button onclick="setClientFilter('all')" class="client-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-morveh-600 text-white">Todos</button>
+                        <button onclick="setClientFilter('active')" class="client-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-morveh-cardBg text-gray-400 hover:text-white border border-morveh-borderBg">Activos</button>
+                        <button onclick="setClientFilter('demo')" class="client-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-morveh-cardBg text-gray-400 hover:text-white border border-morveh-borderBg">Demos</button>
+                        <button onclick="setClientFilter('expired')" class="client-filter-btn px-3 py-1.5 rounded-lg text-xs font-semibold bg-morveh-cardBg text-gray-400 hover:text-white border border-morveh-borderBg">Expirados</button>
+                    </div>
+                </div>
+
+                <!-- Clients Table -->
+                <div class="p-6 rounded-2xl glass-panel border border-morveh-borderBg overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead>
+                            <tr class="text-gray-400 border-b border-morveh-borderBg">
+                                <th class="pb-3 font-semibold">Usuario Emby</th>
+                                <th class="pb-3 font-semibold">Contraseña</th>
+                                <th class="pb-3 font-semibold">Servidor Asignado</th>
+                                <th class="pb-3 font-semibold">Conexiones Max</th>
+                                <th class="pb-3 font-semibold">Vencimiento</th>
+                                <th class="pb-3 font-semibold">Estado</th>
+                                <th class="pb-3 font-semibold text-right">Acciones</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-morveh-borderBg/40" id="clientsTable">
+                            <!-- JS Injected -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- TAB 5: DEMO GENERATOR -->
+            <section id="tab-demo" class="tab-content hidden space-y-6">
+                <div class="max-w-3xl mx-auto space-y-6">
+                    <div class="text-center space-y-2">
+                        <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-bold">
+                            <i data-lucide="zap" class="w-4 h-4"></i> Express Demo Generator
+                        </div>
+                        <h2 class="text-3xl font-black text-white">Generar Cuenta Demo al Instante</h2>
+                        <p class="text-xs text-gray-400">Crea credenciales temporales para clientes de prueba con un solo click.</p>
+                    </div>
+
+                    <div class="p-6 md:p-8 rounded-3xl glass-panel border border-morveh-borderBg space-y-6">
+                        <div>
+                            <label class="block text-xs font-bold text-gray-300 mb-2">Seleccionar Duración del Demo</label>
+                            <div class="grid grid-cols-3 gap-3">
+                                <button type="button" onclick="selectDemoDuration(2)" class="demo-dur-btn p-4 rounded-2xl border border-morveh-600 bg-morveh-600/20 text-white font-bold text-center">
+                                    <span class="block text-xl">2 Horas</span>
+                                    <span class="text-[10px] text-morveh-300">Prueba Rápida</span>
+                                </button>
+                                <button type="button" onclick="selectDemoDuration(4)" class="demo-dur-btn p-4 rounded-2xl border border-morveh-borderBg bg-morveh-cardBg text-gray-400 font-bold text-center hover:border-morveh-500">
+                                    <span class="block text-xl">4 Horas</span>
+                                    <span class="text-[10px] text-gray-500">Estándar</span>
+                                </button>
+                                <button type="button" onclick="selectDemoDuration(24)" class="demo-dur-btn p-4 rounded-2xl border border-morveh-borderBg bg-morveh-cardBg text-gray-400 font-bold text-center hover:border-morveh-500">
+                                    <span class="block text-xl">24 Horas</span>
+                                    <span class="text-[10px] text-gray-500">Full Day (1 Crédito)</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-300 mb-2">Servidor Emby Destino</label>
+                            <select id="demoServerSelect" class="w-full px-4 py-3 bg-morveh-cardBg border border-morveh-borderBg rounded-xl text-xs text-white focus:outline-none focus:border-morveh-accent">
+                                <option value="https://us-east.morvehtv.net:8096">Nodo 01 - USA East Premium</option>
+                                <option value="https://eu-germany.morvehtv.net:8096">Nodo 02 - EU Ultra Low Latency</option>
+                                <option value="https://latam-vip.morvehtv.net:8096">Nodo 03 - LATAM VIP Direct</option>
+                            </select>
+                        </div>
+
+                        <button onclick="generateInstantDemo()" class="w-full py-4 rounded-2xl bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 text-slate-950 font-black text-sm uppercase tracking-wider shadow-xl shadow-amber-500/20 hover:opacity-95 transition-all flex items-center justify-center gap-2">
+                            <i data-lucide="sparkles" class="w-5 h-5"></i> Generar Accesos Demo Ahora
+                        </button>
+                    </div>
+
+                    <!-- Result Box -->
+                    <div id="demoResultCard" class="hidden p-6 rounded-3xl glass-card border border-amber-500/30 space-y-4">
+                        <div class="flex justify-between items-center border-b border-white/10 pb-4">
+                            <div class="flex items-center gap-2 text-emerald-400 font-bold text-sm">
+                                <i data-lucide="check-circle" class="w-5 h-5"></i> ¡Demo Generado con Éxito!
+                            </div>
+                            <span class="text-xs text-amber-300 bg-amber-500/20 px-2.5 py-1 rounded-md font-mono" id="demoTimer">Expiración: --</span>
+                        </div>
+
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="space-y-2 text-xs">
+                                <p><strong class="text-gray-400">Host Emby:</strong> <span id="resHost" class="text-white font-mono"></span></p>
+                                <p><strong class="text-gray-400">Usuario:</strong> <span id="resUser" class="text-amber-300 font-bold font-mono"></span></p>
+                                <p><strong class="text-gray-400">Contraseña:</strong> <span id="resPass" class="text-amber-300 font-bold font-mono"></span></p>
+                                <p><strong class="text-gray-400">URL M3U:</strong> <span id="resM3u" class="text-morveh-300 font-mono text-[10px] break-all"></span></p>
+                            </div>
+                            <div class="flex flex-col items-center justify-center p-3 bg-white/5 rounded-xl">
+                                <div id="qrcodeDemo" class="p-2 bg-white rounded-lg"></div>
+                                <span class="text-[10px] text-gray-400 mt-2">Escanear para Login Directo</span>
+                            </div>
+                        </div>
+
+                        <div class="flex gap-3 pt-2">
+                            <button onclick="copyDemoText()" class="flex-1 py-2.5 rounded-xl bg-morveh-600 hover:bg-morveh-500 text-white font-bold text-xs flex items-center justify-center gap-2">
+                                <i data-lucide="copy" class="w-4 h-4"></i> Copiar Formato WhatsApp
+                            </button>
+                            <button onclick="shareWhatsApp()" class="py-2.5 px-4 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white font-bold text-xs flex items-center justify-center gap-2">
+                                <i data-lucide="send" class="w-4 h-4"></i> Enviar WhatsApp
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 6: PACKAGES -->
+            <section id="tab-packages" class="tab-content hidden space-y-6">
+                <div>
+                    <h2 class="text-2xl font-black text-white">Paquetes & Reglas de Créditos</h2>
+                    <p class="text-xs text-gray-400">Define el costo de crédito por conexiones adicionales y restricciones de librerías.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                    <div class="p-6 rounded-2xl glass-panel border border-morveh-borderBg hover:border-morveh-500/50 transition-all flex flex-col justify-between">
+                        <div>
+                            <span class="text-[10px] uppercase tracking-widest font-extrabold text-morveh-400 bg-morveh-900/60 px-2.5 py-1 rounded">Básico - 1 Pantalla</span>
+                            <h3 class="text-2xl font-black text-white mt-3">1 Crédito <span class="text-xs font-normal text-gray-400">/ mes</span></h3>
+                            <ul class="mt-4 space-y-2 text-xs text-gray-300">
+                                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> 1 Dispositivo Simultáneo</li>
+                                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Películas & Series FHD</li>
+                                <li class="flex items-center gap-2"><i data-lucide="x" class="w-4 h-4 text-rose-500"></i> Canales Deportes 4K</li>
+                            </ul>
+                        </div>
+                        <button class="mt-6 w-full py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white text-xs font-bold border border-white/10">Editar Parámetros</button>
+                    </div>
+
+                    <div class="p-6 rounded-2xl glass-panel border-2 border-morveh-accent relative shadow-2xl flex flex-col justify-between">
+                        <span class="absolute -top-3 right-4 text-[10px] font-black uppercase bg-morveh-accent text-white px-3 py-0.5 rounded-full shadow">Más Vendido</span>
+                        <div>
+                            <span class="text-[10px] uppercase tracking-widest font-extrabold text-morveh-accent bg-morveh-900/60 px-2.5 py-1 rounded">VIP Ultra - 3 Pantallas</span>
+                            <h3 class="text-2xl font-black text-white mt-3">2 Créditos <span class="text-xs font-normal text-gray-400">/ mes</span></h3>
+                            <ul class="mt-4 space-y-2 text-xs text-gray-300">
+                                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> 3 Dispositivos Simultáneos</li>
+                                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Acceso Total Películas 4K HDR</li>
+                                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Canales de Deportes en Vivo</li>
+                                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Librería Adultos (Opcional)</li>
+                            </ul>
+                        </div>
+                        <button class="mt-6 w-full py-2 rounded-xl bg-morveh-accent hover:bg-morveh-500 text-white text-xs font-bold shadow-lg">Editar Parámetros</button>
+                    </div>
+
+                    <div class="p-6 rounded-2xl glass-panel border border-morveh-borderBg hover:border-morveh-500/50 transition-all flex flex-col justify-between">
+                        <div>
+                            <span class="text-[10px] uppercase tracking-widest font-extrabold text-amber-400 bg-amber-950/60 px-2.5 py-1 rounded">Familiar Pro - 5 Pantallas</span>
+                            <h3 class="text-2xl font-black text-white mt-3">3 Créditos <span class="text-xs font-normal text-gray-400">/ mes</span></h3>
+                            <ul class="mt-4 space-y-2 text-xs text-gray-300">
+                                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> 5 Dispositivos Simultáneos</li>
+                                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Transcodificación Directa</li>
+                                <li class="flex items-center gap-2"><i data-lucide="check" class="w-4 h-4 text-emerald-400"></i> Soporte de Prioridad</li>
+                            </ul>
+                        </div>
+                        <button class="mt-6 w-full py-2 rounded-xl bg-white/5 hover:bg-white/10 text-white text-xs font-bold border border-white/10">Editar Parámetros</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 7: TEMPLATES -->
+            <section id="tab-templates" class="tab-content hidden space-y-6">
+                <div>
+                    <h2 class="text-2xl font-black text-white">Generador de Plantillas de Mensajes</h2>
+                    <p class="text-xs text-gray-400">Personaliza las plantillas de notificación enviadas por WhatsApp o Telegram a los clientes.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="p-6 rounded-2xl glass-panel border border-morveh-borderBg space-y-4">
+                        <h3 class="text-base font-bold text-white">Plantilla de Bienvenida / Nueva Cuenta</h3>
+                        <textarea id="templateWelcome" rows="10" class="w-full p-4 bg-morveh-cardBg border border-morveh-borderBg rounded-xl text-xs font-mono text-morveh-200 focus:outline-none focus:border-morveh-accent">
+🍿 *¡BIENVENIDO A MORVEHTV!* 🍿
+
+Hola *{usuario}*, tus accesos VIP ya están activos:
+
+🌐 *Servidor/Host:* {host}
+👤 *Usuario:* {usuario}
+🔑 *Contraseña:* {password}
+📅 *Fecha de Expiración:* {fecha_expiracion}
+📱 *Límite Pantallas:* {dispositivos}
+
+📥 *Instrucciones:*
+Descarga la App Emby en tu Smart TV o TV Box, e ingresa los datos anteriores.
+
+¡Que disfrutes del mejor contenido 4K!</textarea>
+                        <button onclick="saveTemplate('Welcome')" class="px-4 py-2 rounded-xl bg-morveh-600 hover:bg-morveh-500 text-white text-xs font-bold">Guardar Plantilla</button>
+                    </div>
+
+                    <div class="p-6 rounded-2xl glass-panel border border-morveh-borderBg space-y-4">
+                        <h3 class="text-base font-bold text-white">Variables Disponibles</h3>
+                        <div class="grid grid-cols-2 gap-3 text-xs">
+                            <div class="p-3 bg-white/5 rounded-xl border border-white/5"><code class="text-amber-300 font-bold">{usuario}</code> - Nombre usuario Emby</div>
+                            <div class="p-3 bg-white/5 rounded-xl border border-white/5"><code class="text-amber-300 font-bold">{password}</code> - Clave de acceso</div>
+                            <div class="p-3 bg-white/5 rounded-xl border border-white/5"><code class="text-amber-300 font-bold">{host}</code> - Dominio del servidor</div>
+                            <div class="p-3 bg-white/5 rounded-xl border border-white/5"><code class="text-amber-300 font-bold">{fecha_expiracion}</code> - Fecha límite</div>
+                            <div class="p-3 bg-white/5 rounded-xl border border-white/5"><code class="text-amber-300 font-bold">{m3u_url}</code> - Enlace M3U generado</div>
+                            <div class="p-3 bg-white/5 rounded-xl border border-white/5"><code class="text-amber-300 font-bold">{dispositivos}</code> - Límite de pantallas</div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- TAB 8: AUDIT LOGS -->
+            <section id="tab-logs" class="tab-content hidden space-y-6">
+                <div class="flex justify-between items-center">
+                    <div>
+                        <h2 class="text-2xl font-black text-white">Registros del Sistema & Auditoría</h2>
+                        <p class="text-xs text-gray-400">Historial completo de movimientos de créditos, creación de usuarios y respuestas API.</p>
+                    </div>
+                    <button onclick="clearAuditLogs()" class="px-3 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 text-xs font-bold border border-rose-500/30">
+                        Limpiar Logs
+                    </button>
+                </div>
+
+                <div class="p-6 rounded-2xl glass-panel border border-morveh-borderBg overflow-x-auto">
+                    <table class="w-full text-left text-xs">
+                        <thead>
+                            <tr class="text-gray-400 border-b border-morveh-borderBg">
+                                <th class="pb-3 font-semibold">Fecha/Hora</th>
+                                <th class="pb-3 font-semibold">Usuario/Revendedor</th>
+                                <th class="pb-3 font-semibold">Acción Realizada</th>
+                                <th class="pb-3 font-semibold">Dirección IP</th>
+                                <th class="pb-3 font-semibold">Estado API</th>
+                            </tr>
+                        </thead>
+                        <tbody class="divide-y divide-morveh-borderBg/40" id="logsTable">
+                            <!-- Injected JS -->
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- TAB 9: SETTINGS -->
+            <section id="tab-settings" class="tab-content hidden space-y-6">
+                <div>
+                    <h2 class="text-2xl font-black text-white">Ajustes del Sistema MorvehTV</h2>
+                    <p class="text-xs text-gray-400">Configuración global de APIs, Webhooks de Telegram y automatización.</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div class="p-6 rounded-2xl glass-panel border border-morveh-borderBg space-y-4">
+                        <h3 class="text-base font-bold text-white flex items-center gap-2"><i data-lucide="key" class="w-4 h-4 text-morveh-accent"></i> Clave API Emby Master</h3>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">Emby Master Server API Key</label>
+                            <input type="password" value="a8f7d983421e48bc9281a03948123ef" class="w-full px-4 py-2.5 bg-morveh-cardBg border border-morveh-borderBg rounded-xl text-xs text-white focus:outline-none focus:border-morveh-accent">
+                        </div>
+                        <div>
+                            <label class="block text-xs text-gray-400 mb-1">Webhook URL Telegram (Alertas Automáticas)</label>
+                            <input type="text" value="https://api.telegram.org/bot78123901:AAFg.../sendMessage" class="w-full px-4 py-2.5 bg-morveh-cardBg border border-morveh-borderBg rounded-xl text-xs text-white focus:outline-none focus:border-morveh-accent">
+                        </div>
+                        <button onclick="saveSettings()" class="px-4 py-2 rounded-xl bg-morveh-600 hover:bg-morveh-500 text-white text-xs font-bold">Guardar Cambios</button>
+                    </div>
+
+                    <div class="p-6 rounded-2xl glass-panel border border-morveh-borderBg space-y-4">
+                        <h3 class="text-base font-bold text-white flex items-center gap-2"><i data-lucide="clock" class="w-4 h-4 text-amber-400"></i> Cron Automático de Vencimiento</h3>
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                            <div>
+                                <p class="text-xs font-bold text-white">Desactivar cuentas vencidas automáticamente</p>
+                                <p class="text-[10px] text-gray-400">Ejecuta cron job cada 1 hora en nodos Emby.</p>
+                            </div>
+                            <input type="checkbox" checked class="w-4 h-4 accent-morveh-accent">
+                        </div>
+                        <div class="flex items-center justify-between p-3 bg-white/5 rounded-xl">
+                            <div>
+                                <p class="text-xs font-bold text-white">Notificar vía Telegram 24h antes del vencimiento</p>
+                                <p class="text-[10px] text-gray-400">Envía mensaje al cliente/revendedor automáticamente.</p>
+                            </div>
+                            <input type="checkbox" checked class="w-4 h-4 accent-morveh-accent">
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+        </main>
+    </div>
+
+    <!-- MODAL 1: CREAR CLIENTE WIZARD -->
+    <div id="createClientModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-[#121217] border border-morveh-borderBg w-full max-w-xl rounded-3xl p-6 space-y-6 shadow-2xl relative">
+            <button onclick="closeModal('createClientModal')" class="absolute top-5 right-5 text-gray-400 hover:text-white">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div class="border-b border-morveh-borderBg pb-4">
+                <h3 class="text-xl font-black text-white">Crear Nuevo Cliente Emby</h3>
+                <p class="text-xs text-gray-400">Asigna credenciales, duración de plan y librerías permitidas.</p>
+            </div>
+
+            <form id="createClientForm" onsubmit="handleCreateClient(event)" class="space-y-4">
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 mb-1">Nombre de Usuario</label>
+                        <input type="text" id="newClientUsername" required placeholder="ej: carlos_vip" class="w-full px-4 py-2.5 bg-morveh-cardBg border border-morveh-borderBg rounded-xl text-xs text-white focus:outline-none focus:border-morveh-accent">
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 mb-1">Contraseña</label>
+                        <input type="text" id="newClientPassword" required placeholder="ej: Morveh2026!" class="w-full px-4 py-2.5 bg-morveh-cardBg border border-morveh-borderBg rounded-xl text-xs text-white focus:outline-none focus:border-morveh-accent">
+                    </div>
+                </div>
+
+                <div class="grid grid-cols-2 gap-4">
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 mb-1">Duración del Plan</label>
+                        <select id="newClientDuration" class="w-full px-4 py-2.5 bg-morveh-cardBg border border-morveh-borderBg rounded-xl text-xs text-white focus:outline-none focus:border-morveh-accent">
+                            <option value="1">1 Mes (1 Crédito)</option>
+                            <option value="3">3 Meses (3 Créditos)</option>
+                            <option value="6">6 Meses (5 Créditos - Oferta)</option>
+                            <option value="12">12 Meses (9 Créditos - Anual)</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-bold text-gray-300 mb-1">Servidor Asignado</label>
+                        <select id="newClientServer" class="w-full px-4 py-2.5 bg-morveh-cardBg border border-morveh-borderBg rounded-xl text-xs text-white focus:outline-none focus:border-morveh-accent">
+                            <option value="Nodo 01 - USA">Nodo 01 - USA East Premium</option>
+                            <option value="Nodo 02 - EU">Nodo 02 - EU Ultra Low Latency</option>
+                            <option value="Nodo 03 - LATAM">Nodo 03 - LATAM VIP Direct</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Límite de Conexiones Simultáneas: <span id="connVal" class="text-morveh-accent">2</span></label>
+                    <input type="range" id="newClientConns" min="1" max="5" value="2" oninput="document.getElementById('connVal').innerText = this.value" class="w-full accent-morveh-accent">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-2">Librerías Habilitadas</label>
+                    <div class="grid grid-cols-2 sm:grid-cols-3 gap-2 text-xs">
+                        <label class="flex items-center gap-2 p-2 bg-morveh-cardBg rounded-lg border border-morveh-borderBg">
+                            <input type="checkbox" checked class="accent-morveh-accent"> Películas 4K HDR
+                        </label>
+                        <label class="flex items-center gap-2 p-2 bg-morveh-cardBg rounded-lg border border-morveh-borderBg">
+                            <input type="checkbox" checked class="accent-morveh-accent"> Series Estrenos
+                        </label>
+                        <label class="flex items-center gap-2 p-2 bg-morveh-cardBg rounded-lg border border-morveh-borderBg">
+                            <input type="checkbox" checked class="accent-morveh-accent"> Deportes VIP
+                        </label>
+                        <label class="flex items-center gap-2 p-2 bg-morveh-cardBg rounded-lg border border-morveh-borderBg">
+                            <input type="checkbox" checked class="accent-morveh-accent"> Anime & Dibujos
+                        </label>
+                        <label class="flex items-center gap-2 p-2 bg-morveh-cardBg rounded-lg border border-morveh-borderBg">
+                            <input type="checkbox" class="accent-morveh-accent"> Contenido Adultos
+                        </label>
+                    </div>
+                </div>
+
+                <div class="pt-4 flex gap-3">
+                    <button type="button" onclick="closeModal('createClientModal')" class="flex-1 py-2.5 rounded-xl bg-morveh-cardBg hover:bg-white/5 text-gray-400 font-bold text-xs border border-morveh-borderBg">Cancelar</button>
+                    <button type="submit" class="flex-1 py-2.5 rounded-xl bg-gradient-to-r from-morveh-600 to-morveh-accent text-white font-bold text-xs shadow-lg shadow-morveh-600/30">Crear & Activar Cuenta</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 2: GESTIÓN DE CRÉDITOS REVENDEDOR -->
+    <div id="creditAddModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-[#121217] border border-morveh-borderBg w-full max-w-md rounded-3xl p-6 space-y-6 shadow-2xl relative">
+            <button onclick="closeModal('creditAddModal')" class="absolute top-5 right-5 text-gray-400 hover:text-white">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div>
+                <h3 class="text-xl font-black text-white">Añadir / Deducir Créditos</h3>
+                <p class="text-xs text-gray-400">Ajuste de saldo de revendedor con nota de transacción.</p>
+            </div>
+
+            <form onsubmit="handleCreditSubmit(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Seleccionar Revendedor</label>
+                    <select id="creditTargetReseller" class="w-full px-4 py-2.5 bg-morveh-cardBg border border-morveh-borderBg rounded-xl text-xs text-white focus:outline-none focus:border-morveh-accent">
+                        <option value="JuanPerez">JuanPerez (Saldo Actual: 150 CR)</option>
+                        <option value="StreamMaster">StreamMaster (Saldo Actual: 450 CR)</option>
+                        <option value="LatamTV">LatamTV (Saldo Actual: 12 CR)</option>
+                    </select>
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Cantidad de Créditos</label>
+                    <input type="number" id="creditAmount" required placeholder="ej: 50" class="w-full px-4 py-2.5 bg-morveh-cardBg border border-morveh-borderBg rounded-xl text-xs text-white focus:outline-none focus:border-morveh-accent">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Nota de Referencia / Pago</label>
+                    <input type="text" placeholder="ej: Pago recibido vía Binance TX#9812" class="w-full px-4 py-2.5 bg-morveh-cardBg border border-morveh-borderBg rounded-xl text-xs text-white focus:outline-none focus:border-morveh-accent">
+                </div>
+
+                <div class="flex gap-3 pt-2">
+                    <button type="submit" class="w-full py-2.5 rounded-xl bg-morveh-600 hover:bg-morveh-500 text-white font-bold text-xs shadow-lg">Confirmar Recarga</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- MODAL 3: CREAR REVENDEDOR -->
+    <div id="createResellerModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden">
+        <div class="bg-[#121217] border border-morveh-borderBg w-full max-w-md rounded-3xl p-6 space-y-6 shadow-2xl relative">
+            <button onclick="closeModal('createResellerModal')" class="absolute top-5 right-5 text-gray-400 hover:text-white">
+                <i data-lucide="x" class="w-5 h-5"></i>
+            </button>
+
+            <div>
+                <h3 class="text-xl font-black text-white">Alta de Nuevo Revendedor</h3>
+                <p class="text-xs text-gray-400">Crea una sub-cuenta con saldo inicial de créditos.</p>
+            </div>
+
+            <form onsubmit="handleCreateReseller(event)" class="space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Nombre o Alias</label>
+                    <input type="text" id="newResellerName" required placeholder="ej: TechnoTV" class="w-full px-4 py-2.5 bg-morveh-cardBg border border-morveh-borderBg rounded-xl text-xs text-white focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Correo Electrónico</label>
+                    <input type="email" required placeholder="ej: contacto@technotv.com" class="w-full px-4 py-2.5 bg-morveh-cardBg border border-morveh-borderBg rounded-xl text-xs text-white focus:outline-none">
+                </div>
+                <div>
+                    <label class="block text-xs font-bold text-gray-300 mb-1">Créditos Iniciales</label>
+                    <input type="number" id="newResellerCredits" required value="10" class="w-full px-4 py-2.5 bg-morveh-cardBg border border-morveh-borderBg rounded-xl text-xs text-white focus:outline-none">
+                </div>
+                <button type="submit" class="w-full py-2.5 rounded-xl bg-morveh-accent hover:bg-morveh-500 text-white font-bold text-xs shadow-lg">Guardar Revendedor</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- JAVASCRIPT APP LOGIC -->
+    <script>
+        // --- INITIAL MOCK DATA ---
+        let userBalance = 1450.00;
+
+        let clients = [
+            { id: 1, user: 'carlos_stream', pass: 'Mo9812#', server: 'Nodo 01 - USA', conns: 2, exp: '2026-11-15', status: 'Activo', reseller: 'Directo' },
+            { id: 2, user: 'maria_cinema', pass: 'Cine2026', server: 'Nodo 02 - EU', conns: 1, exp: '2026-10-21', status: 'Activo', reseller: 'JuanPerez' },
+            { id: 3, user: 'demo_user_88', pass: 'Demo1234', server: 'Nodo 03 - LATAM', conns: 1, exp: '2026-10-19', status: 'Demo', reseller: 'StreamMaster' },
+            { id: 4, user: 'roberto_tv', pass: 'Pass9900', server: 'Nodo 01 - USA', conns: 3, exp: '2026-10-10', status: 'Expirado', reseller: 'Directo' },
+            { id: 5, user: 'andres_4k', pass: 'VipUltra#1', server: 'Nodo 01 - USA', conns: 2, exp: '2026-10-20', status: 'Activo', reseller: 'LatamTV' }
+        ];
+
+        let resellers = [
+            { id: 1, name: 'JuanPerez', credits: 150, clients: 42, margin: '30%', status: 'Activo' },
+            { id: 2, name: 'StreamMaster', credits: 450, clients: 118, margin: '40%', status: 'Activo' },
+            { id: 3, name: 'LatamTV', credits: 12, clients: 9, margin: '25%', status: 'Activo' },
+            { id: 4, name: 'IPTV_Express', credits: 0, clients: 3, margin: '20%', status: 'Suspendido' }
+        ];
+
+        let servers = [
+            { name: 'Nodo 01 - USA East Premium', host: 'us-east.morvehtv.net', status: 'Online', cpu: 34, ram: '12.4GB / 32GB', activeStreams: 184, ping: '18ms' },
+            { name: 'Nodo 02 - EU Germany Ultra', host: 'eu-germany.morvehtv.net', status: 'Online', cpu: 58, ram: '22.1GB / 64GB', activeStreams: 142, ping: '42ms' },
+            { name: 'Nodo 03 - LATAM VIP Direct', host: 'latam-vip.morvehtv.net', status: 'Online', cpu: 22, ram: '8.5GB / 32GB', activeStreams: 92, ping: '25ms' }
+        ];
+
+        let logs = [
+            { time: '2026-10-19 12:45:10', user: 'Admin Master', action: 'Generación Demo 2H (demo_9821)', ip: '181.42.12.9', apiStatus: '200 OK' },
+            { time: '2026-10-19 11:30:22', user: 'JuanPerez', action: 'Renovación Cliente (maria_cinema)', ip: '190.11.45.88', apiStatus: '200 OK' },
+            { time: '2026-10-19 09:15:00', user: 'Admin Master', action: 'Recarga +100 Créditos a JuanPerez', ip: '181.42.12.9', apiStatus: '200 OK' }
+        ];
+
+        let currentDemoDuration = 2;
+        let currentClientFilter = 'all';
+
+        // --- APP INITIALIZATION ---
+        window.onload = function() {
+            lucide.createIcons();
+            initChart();
+            renderDashboard();
+            renderClients();
+            renderResellers();
+            renderServers();
+            renderLogs();
+        };
+
+        // --- NAVIGATION CONTROLLER ---
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
+
+            document.querySelectorAll('.nav-item').forEach(el => {
+                el.classList.remove('bg-morveh-600/20', 'border', 'border-morveh-500/30', 'text-morveh-accent');
+                el.classList.add('text-gray-400');
+            });
+
+            const activeNav = document.getElementById(`nav-${tabId}`);
+            if(activeNav) {
+                activeNav.classList.add('bg-morveh-600/20', 'border', 'border-morveh-500/30', 'text-morveh-accent');
+                activeNav.classList.remove('text-gray-400');
+            }
+
+            // Close mobile sidebar on navigate
+            document.getElementById('sidebar').classList.add('-translate-x-full');
+            document.getElementById('mobileBackdrop').classList.add('hidden');
+        }
+
+        function toggleSidebar() {
+            const sidebar = document.getElementById('sidebar');
+            const backdrop = document.getElementById('mobileBackdrop');
+            sidebar.classList.toggle('-translate-x-full');
+            backdrop.classList.toggle('hidden');
+        }
+
+        function toggleNotifications() {
+            document.getElementById('notifMenu').classList.toggle('hidden');
+        }
+
+        // --- CHART.JS INITIALIZATION ---
+        function initChart() {
+            const ctx = document.getElementById('streamsChart').getContext('2d');
+            new Chart(ctx, {
+                type: 'line',
+                data: {
+                    labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', '23:59'],
+                    datasets: [
+                        {
+                            label: 'Streams Transcodificados',
+                            data: [120, 80, 150, 290, 380, 418, 310],
+                            borderColor: '#8b5cf6',
+                            backgroundColor: 'rgba(139, 92, 246, 0.15)',
+                            fill: true,
+                            tension: 0.4
+                        },
+                        {
+                            label: 'Direct Play (Sin Carga CPU)',
+                            data: [90, 40, 110, 180, 240, 290, 210],
+                            borderColor: '#a855f7',
+                            borderDash: [5, 5],
+                            fill: false,
+                            tension: 0.4
+                        }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { labels: { color: '#9ca3af', font: { family: 'Plus Jakarta Sans', size: 11 } } }
+                    },
+                    scales: {
+                        x: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#9ca3af' } },
+                        y: { grid: { color: 'rgba(255, 255, 255, 0.05)' }, ticks: { color: '#9ca3af' } }
+                    }
+                }
+            });
+        }
+
+        // --- RENDER FUNCTIONS ---
+        function renderDashboard() {
+            // Render Expiring Accounts
+            const table = document.getElementById('expiringTable');
+            table.innerHTML = clients.slice(0, 3).map(c => `
+                <tr>
+                    <td class="py-3 font-bold text-white">${c.user}</td>
+                    <td class="py-3 text-gray-400">${c.reseller}</td>
+                    <td class="py-3 text-amber-400 font-mono">${c.exp}</td>
+                    <td class="py-3 text-right">
+                        <button onclick="renewClient(${c.id})" class="px-2.5 py-1 rounded bg-morveh-600 hover:bg-morveh-500 text-white font-bold">Renovar</button>
+                    </td>
+                </tr>
+            `).join('');
+
+            // Render Top Resellers
+            const resellerList = document.getElementById('topResellersList');
+            resellerList.innerHTML = resellers.slice(0, 3).map((r, i) => `
+                <div class="flex items-center justify-between p-3 rounded-xl bg-white/5 border border-white/5">
+                    <div class="flex items-center gap-3">
+                        <span class="w-6 h-6 rounded-full bg-morveh-600/30 text-morveh-300 flex items-center justify-center font-bold text-xs">#${i+1}</span>
+                        <div>
+                            <p class="text-xs font-bold text-white">${r.name}</p>
+                            <p class="text-[10px] text-gray-400">${r.clients} Clientes Activos</p>
+                        </div>
+                    </div>
+                    <span class="text-xs font-bold text-morveh-accent font-mono">${r.credits} CR</span>
+                </div>
+            `).join('');
+        }
+
+        function renderClients() {
+            const table = document.getElementById('clientsTable');
+            let filtered = clients;
+
+            if (currentClientFilter !== 'all') {
+                filtered = clients.filter(c => c.status.toLowerCase() === currentClientFilter);
+            }
+
+            table.innerHTML = filtered.map(c => `
+                <tr class="hover:bg-white/5 transition-colors">
+                    <td class="py-3 font-bold text-white">${c.user}</td>
+                    <td class="py-3 font-mono text-gray-400">${c.pass}</td>
+                    <td class="py-3 text-gray-300">${c.server}</td>
+                    <td class="py-3 text-gray-300">${c.conns} Pantallas</td>
+                    <td class="py-3 font-mono text-gray-400">${c.exp}</td>
+                    <td class="py-3">
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                            c.status === 'Activo' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' :
+                            c.status === 'Demo' ? 'bg-amber-500/20 text-amber-300 border border-amber-500/30' :
+                            'bg-rose-500/20 text-rose-400 border border-rose-500/30'
+                        }">
+                            ${c.status}
+                        </span>
+                    </td>
+                    <td class="py-3 text-right flex justify-end gap-2">
+                        <button onclick="renewClient(${c.id})" class="p-1.5 rounded bg-morveh-cardBg hover:bg-morveh-600 text-gray-300 hover:text-white" title="Renovar +30 días">
+                            <i data-lucide="refresh-cw" class="w-3.5 h-3.5"></i>
+                        </button>
+                        <button onclick="deleteClient(${c.id})" class="p-1.5 rounded bg-morveh-cardBg hover:bg-rose-600 text-gray-300 hover:text-white" title="Eliminar Cuenta">
+                            <i data-lucide="trash-2" class="w-3.5 h-3.5"></i>
+                        </button>
+                    </td>
+                </tr>
+            `).join('');
+            lucide.createIcons();
+        }
+
+        function renderResellers() {
+            const table = document.getElementById('resellersTable');
+            table.innerHTML = resellers.map(r => `
+                <tr class="hover:bg-white/5 transition-colors">
+                    <td class="py-3 font-bold text-white">${r.name}</td>
+                    <td class="py-3 font-mono text-morveh-accent font-bold">${r.credits} CR</td>
+                    <td class="py-3 text-gray-300">${r.clients} Cuentas</td>
+                    <td class="py-3 text-emerald-400 font-bold">${r.margin}</td>
+                    <td class="py-3">
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${r.status === 'Activo' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-rose-500/20 text-rose-400'}">${r.status}</span>
+                    </td>
+                    <td class="py-3 text-right">
+                        <button onclick="openModal('creditAddModal')" class="px-2.5 py-1 rounded bg-morveh-600 hover:bg-morveh-500 text-white font-bold">Gestión Créditos</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function renderServers() {
+            const grid = document.getElementById('serverNodesGrid');
+            grid.innerHTML = servers.map(s => `
+                <div class="p-6 rounded-2xl glass-panel border border-morveh-borderBg space-y-4">
+                    <div class="flex justify-between items-start">
+                        <div>
+                            <h3 class="text-base font-bold text-white">${s.name}</h3>
+                            <p class="text-xs text-gray-400 font-mono">${s.host}</p>
+                        </div>
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/30">${s.status}</span>
+                    </div>
+
+                    <div class="space-y-2 text-xs">
+                        <div>
+                            <div class="flex justify-between text-gray-400 mb-1">
+                                <span>Carga CPU</span>
+                                <span class="text-white font-bold">${s.cpu}%</span>
+                            </div>
+                            <div class="w-full h-1.5 bg-morveh-cardBg rounded-full overflow-hidden">
+                                <div class="h-full bg-morveh-accent" style="width: ${s.cpu}%"></div>
+                            </div>
+                        </div>
+
+                        <div class="flex justify-between text-gray-400 pt-2">
+                            <span>Memoria RAM:</span>
+                            <span class="text-white font-mono">${s.ram}</span>
+                        </div>
+                        <div class="flex justify-between text-gray-400">
+                            <span>Streams Activos:</span>
+                            <span class="text-morveh-accent font-bold">${s.activeStreams}</span>
+                        </div>
+                        <div class="flex justify-between text-gray-400">
+                            <span>Latencia Nodo:</span>
+                            <span class="text-emerald-400 font-mono">${s.ping}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderLogs() {
+            const table = document.getElementById('logsTable');
+            table.innerHTML = logs.map(l => `
+                <tr>
+                    <td class="py-3 font-mono text-gray-400">${l.time}</td>
+                    <td class="py-3 font-bold text-white">${l.user}</td>
+                    <td class="py-3 text-gray-300">${l.action}</td>
+                    <td class="py-3 font-mono text-gray-500">${l.ip}</td>
+                    <td class="py-3 text-emerald-400 font-bold">${l.apiStatus}</td>
+                </tr>
+            `).join('');
+        }
+
+        // --- DEMO GENERATOR LOGIC ---
+        function selectDemoDuration(dur) {
+            currentDemoDuration = dur;
+            document.querySelectorAll('.demo-dur-btn').forEach(btn => {
+                btn.classList.remove('border-morveh-600', 'bg-morveh-600/20', 'text-white');
+                btn.classList.add('border-morveh-borderBg', 'bg-morveh-cardBg', 'text-gray-400');
+            });
+            event.currentTarget.classList.add('border-morveh-600', 'bg-morveh-600/20', 'text-white');
+        }
+
+        function generateInstantDemo() {
+            const server = document.getElementById('demoServerSelect').value;
+            const randomId = Math.floor(1000 + Math.random() * 9000);
+            const username = `demo_morveh_${randomId}`;
+            const password = `Tv${Math.floor(100 + Math.random() * 900)}!`;
+
+            document.getElementById('resHost').innerText = server;
+            document.getElementById('resUser').innerText = username;
+            document.getElementById('resPass').innerText = password;
+            document.getElementById('resM3u').innerText = `${server}/live/m3u?u=${username}&p=${password}`;
+            document.getElementById('demoTimer').innerText = `Vence en ${currentDemoDuration} Horas`;
+
+            // QR Code Generation
+            const qrContainer = document.getElementById("qrcodeDemo");
+            qrContainer.innerHTML = "";
+            new QRCode(qrContainer, {
+                text: `${server}|${username}|${password}`,
+                width: 90,
+                height: 90,
+                colorDark : "#09090b",
+                colorLight : "#ffffff",
+                correctLevel : QRCode.CorrectLevel.H
+            });
+
+            document.getElementById('demoResultCard').classList.remove('hidden');
+
+            // Log
+            logs.unshift({
+                time: new Date().toISOString().replace('T', ' ').substring(0, 19),
+                user: 'Admin Master',
+                action: `Generó Demo ${currentDemoDuration}H (${username})`,
+                ip: '181.42.12.9',
+                apiStatus: '200 OK'
+            });
+            renderLogs();
+        }
+
+        function copyDemoText() {
+            const host = document.getElementById('resHost').innerText;
+            const user = document.getElementById('resUser').innerText;
+            const pass = document.getElementById('resPass').innerText;
+            const text = `🍿 *MORVEHTV ACCESO DEMO ${currentDemoDuration}H* 🍿\n\n🌐 *Host Emby:* ${host}\n👤 *Usuario:* ${user}\n🔑 *Contraseña:* ${pass}\n\n¡Disfruta del mejor contenido VIP!`;
+
+            navigator.clipboard.writeText(text);
+            alert('¡Plantilla del demo copiada al portapapeles!');
+        }
+
+        function shareWhatsApp() {
+            const host = document.getElementById('resHost').innerText;
+            const user = document.getElementById('resUser').innerText;
+            const pass = document.getElementById('resPass').innerText;
+            const text = encodeURIComponent(`🍿 *MORVEHTV ACCESO DEMO ${currentDemoDuration}H* 🍿\n\n🌐 *Host Emby:* ${host}\n👤 *Usuario:* ${user}\n🔑 *Contraseña:* ${pass}`);
+            window.open(`https://wa.me/?text=${text}`, '_blank');
+        }
+
+        // --- CLIENT ACTIONS ---
+        function handleCreateClient(e) {
+            e.preventDefault();
+            const username = document.getElementById('newClientUsername').value;
+            const password = document.getElementById('newClientPassword').value;
+            const server = document.getElementById('newClientServer').value;
+            const conns = parseInt(document.getElementById('newClientConns').value);
+
+            clients.unshift({
+                id: Date.now(),
+                user: username,
+                pass: password,
+                server: server,
+                conns: conns,
+                exp: '2026-11-20',
+                status: 'Activo',
+                reseller: 'Directo'
+            });
+
+            // Deduct credits
+            userBalance -= 1;
+            document.getElementById('userCreditDisplay').innerHTML = `${userBalance.toFixed(2)} <span class="text-xs font-normal text-morveh-400">CR</span>`;
+
+            renderClients();
+            renderDashboard();
+            closeModal('createClientModal');
+            alert('¡Cliente creado exitosamente en el servidor Emby!');
+        }
+
+        function renewClient(id) {
+            const client = clients.find(c => c.id === id);
+            if (client) {
+                client.status = 'Activo';
+                client.exp = '2026-12-01';
+                renderClients();
+                renderDashboard();
+                alert(`Cuenta ${client.user} renovada por 30 días adicionales.`);
+            }
+        }
+
+        function deleteClient(id) {
+            if (confirm('¿Seguro que deseas eliminar este cliente del servidor Emby?')) {
+                clients = clients.filter(c => c.id !== id);
+                renderClients();
+                renderDashboard();
+            }
+        }
+
+        function filterClients() {
+            const query = document.getElementById('clientSearchInput').value.toLowerCase();
+            const filtered = clients.filter(c => c.user.toLowerCase().includes(query) || c.reseller.toLowerCase().includes(query));
+            const table = document.getElementById('clientsTable');
+            table.innerHTML = filtered.map(c => `
+                <tr class="hover:bg-white/5 transition-colors">
+                    <td class="py-3 font-bold text-white">${c.user}</td>
+                    <td class="py-3 font-mono text-gray-400">${c.pass}</td>
+                    <td class="py-3 text-gray-300">${c.server}</td>
+                    <td class="py-3 text-gray-300">${c.conns} Pantallas</td>
+                    <td class="py-3 font-mono text-gray-400">${c.exp}</td>
+                    <td class="py-3">
+                        <span class="px-2 py-0.5 rounded-full text-[10px] font-bold ${c.status === 'Activo' ? 'bg-emerald-500/20 text-emerald-400' : 'bg-amber-500/20 text-amber-300'}">${c.status}</span>
+                    </td>
+                    <td class="py-3 text-right">
+                        <button onclick="renewClient(${c.id})" class="p-1 bg-morveh-cardBg hover:bg-morveh-600 rounded text-xs">Renovar</button>
+                    </td>
+                </tr>
+            `).join('');
+        }
+
+        function setClientFilter(type) {
+            currentClientFilter = type;
+            document.querySelectorAll('.client-filter-btn').forEach(btn => {
+                btn.classList.remove('bg-morveh-600', 'text-white');
+                btn.classList.add('bg-morveh-cardBg', 'text-gray-400');
+            });
+            event.currentTarget.classList.add('bg-morveh-600', 'text-white');
+            renderClients();
+        }
+
+        // --- CREDIT & RESELLER SUBMITS ---
+        function handleCreditSubmit(e) {
+            e.preventDefault();
+            const amount = parseInt(document.getElementById('creditAmount').value);
+            const target = document.getElementById('creditTargetReseller').value;
+
+            const res = resellers.find(r => r.name === target);
+            if (res) {
+                res.credits += amount;
+                renderResellers();
+                closeModal('creditAddModal');
+                alert(`Se han asignado ${amount} créditos a ${target}.`);
+            }
+        }
+
+        function handleCreateReseller(e) {
+            e.preventDefault();
+            const name = document.getElementById('newResellerName').value;
+            const credits = parseInt(document.getElementById('newResellerCredits').value);
+
+            resellers.unshift({
+                id: Date.now(),
+                name: name,
+                credits: credits,
+                clients: 0,
+                margin: '30%',
+                status: 'Activo'
+            });
+
+            renderResellers();
+            closeModal('createResellerModal');
+            alert('Nuevo revendedor registrado con éxito.');
+        }
+
+        // --- UTILS ---
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+        function saveTemplate(type) { alert(`Plantilla ${type} guardada en servidor.`); }
+        function saveSettings() { alert('Ajustes del sistema MorvehTV actualizados.'); }
+        function clearAuditLogs() { logs = []; renderLogs(); }
+    </script>
+</body>
+</html>
