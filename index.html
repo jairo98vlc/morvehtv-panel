@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MorvehTV - PANEL</title>
+    <title>MorvehTV - PANEL OFICIAL</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -541,7 +541,7 @@ Tus datos de acceso a Emby son:
                 { id: '2', name: 'Pack VIP Trimestral', months: 3, credits: 3, libraries: ['Películas 4K', 'Series Estreno', 'Anime', 'Documentales', 'Deportes'] }
             ],
             clients: [
-                { id: '1', username: 'juan_perez', rank: 'VIP Diamond', maxStreams: 1, packName: 'Pack Mensual Base', libraries: 'Películas 4K, Series Estreno', expiresAt: '2026-11-01', isActive: true, notes: 'Telegram @juan' }
+                { id: '1', username: 'juan_perez', password: 'password123', rank: 'VIP Diamond', maxStreams: 1, packName: 'Pack Mensual Base', libraries: 'Películas 4K, Series Estreno', expiresAt: '2026-11-01', isActive: true, notes: 'Telegram @juan' }
             ],
             resellers: [
                 { id: '1', name: 'Reseller_Carlos', credits: 250, clientsCount: 24 }
@@ -790,6 +790,7 @@ Tus datos de acceso a Emby son:
             const filtered = db.clients.filter(c => c.username.toLowerCase().includes(filterText.toLowerCase()));
 
             filtered.forEach(client => {
+                const passToShow = client.password || '123456';
                 const tr = document.createElement('tr');
                 tr.className = "hover:bg-[#222222] transition";
                 tr.innerHTML = `
@@ -800,7 +801,7 @@ Tus datos de acceso a Emby son:
                     <td class="px-5 py-3.5 font-mono text-xs">${client.expiresAt}</td>
                     <td class="px-5 py-3.5"><span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400">Activo</span></td>
                     <td class="px-5 py-3.5 text-right space-x-2">
-                        <button onclick="openMessageModal('${client.username}', '••••••', '${client.expiresAt}', '${client.packName || 'Pack Estándar'}', '${client.rank || 'Bronce'}', '${client.libraries || 'Todas'}')" class="p-1.5 bg-netflix-card text-zinc-300 rounded-lg text-xs" title="Enviar Datos"><i class="fa-solid fa-paper-plane"></i></button>
+                        <button onclick="openMessageModal('${client.username}', '${passToShow}', '${client.expiresAt}', '${client.packName || 'Pack Estándar'}', '${client.rank || 'Bronce'}', '${client.libraries || 'Todas'}')" class="p-1.5 bg-netflix-card text-zinc-300 rounded-lg text-xs" title="Enviar Datos"><i class="fa-solid fa-paper-plane"></i></button>
                         <button onclick="deleteClient('${client.id}')" class="p-1.5 bg-rose-600/20 text-rose-400 rounded-lg text-xs" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
                     </td>
                 `;
@@ -866,6 +867,7 @@ Tus datos de acceso a Emby son:
             db.clients.unshift({
                 id: Date.now().toString(),
                 username: user,
+                password: pass,
                 rank: rank,
                 maxStreams: parseInt(streams),
                 packName: 'Demo Express',
@@ -905,11 +907,13 @@ Tus datos de acceso a Emby son:
 
             for(let i=1; i<=count; i++) {
                 const user = `${prefix}${Math.floor(100 + Math.random()*900)}`;
+                const pass = Math.random().toString(36).slice(-6);
                 const expDate = new Date();
                 expDate.setMonth(expDate.getMonth() + months);
                 db.clients.unshift({
                     id: Date.now().toString() + i,
                     username: user,
+                    password: pass,
                     rank: 'Bronce',
                     maxStreams: 1,
                     packName: `${months} Mes(es) Masivo`,
@@ -937,7 +941,7 @@ Tus datos de acceso a Emby son:
         }
 
         function openClientModal() { 
-            renderPacks(); // Actualiza el select de packs al abrir el modal
+            renderPacks();
             document.getElementById('clientModal').classList.remove('hidden'); 
         }
         function closeClientModal() { document.getElementById('clientModal').classList.add('hidden'); }
@@ -946,7 +950,7 @@ Tus datos de acceso a Emby son:
 
         async function saveClient() {
             const user = document.getElementById('modalUsername').value.trim();
-            const pass = document.getElementById('modalPassword').value.trim();
+            const pass = document.getElementById('modalPassword').value.trim() || '123456';
             const packId = document.getElementById('modalPackSelect').value;
             const rank = document.getElementById('modalRankSelect').value;
             const streams = parseInt(document.getElementById('modalStreams').value);
@@ -971,121 +975,4 @@ Tus datos de acceso a Emby son:
             const apiKey = localStorage.getItem('embyApiKey');
 
             if (host && apiKey) {
-                try {
-                    const resUser = await fetch(`${host}/emby/Users/New?api_key=${apiKey}`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ Name: user })
-                    });
-                    if(resUser.ok) {
-                        const data = await resUser.json();
-                        await fetch(`${host}/emby/Users/${data.Id}/Password?api_key=${apiKey}`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ Id: data.Id, New: pass || '123456' })
-                        });
-                        await fetch(`${host}/emby/Users/${data.Id}/Policy?api_key=${apiKey}`, {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ SimultaneousStreamLimit: streams })
-                        });
-                    }
-                } catch(e) {
-                    console.error('Error al sincronizar cliente con Emby:', e);
-                }
-            }
-
-            db.adminCredits -= creditsCost;
-            const expDate = new Date();
-            expDate.setMonth(expDate.getMonth() + months);
-
-            db.clients.unshift({
-                id: Date.now().toString(),
-                username: user,
-                rank: rank,
-                maxStreams: streams,
-                packName: packName,
-                libraries: assignedLibs,
-                expiresAt: expDate.toISOString().split('T')[0],
-                isActive: true,
-                notes: document.getElementById('modalNotes').value
-            });
-
-            saveLocalDB();
-            renderClients();
-            closeClientModal();
-            logAudit(`Cliente Pro creado (${rank}) con ${packName}: ${user}`);
-            alert(`¡Cliente ${user} creado con éxito utilizando el pack "${packName}"!`);
-        }
-
-        function deleteClient(id) {
-            db.clients = db.clients.filter(c => c.id !== id);
-            saveLocalDB();
-            renderClients();
-        }
-
-        function saveReseller() {
-            const name = document.getElementById('resellerNameInput').value;
-            if(!name) return;
-            db.resellers.push({ id: Date.now().toString(), name, credits: parseInt(document.getElementById('resellerCreditsInput').value), clientsCount: 0 });
-            saveLocalDB();
-            renderResellers();
-            closeResellerModal();
-        }
-
-        function openMessageModal(u, p, d, pack, rank, libs) {
-            const host = localStorage.getItem('embyHost') || 'http://tu-servidor:8096';
-            const template = localStorage.getItem('msgTemplate') || document.getElementById('templateText').value;
-            currentMsgText = template
-                .replace(/{usuario}/g, u)
-                .replace(/{password}/g, p)
-                .replace(/{host}/g, host)
-                .replace(/{rango}/g, rank)
-                .replace(/{pack}/g, pack)
-                .replace(/{libraries}/g, libs)
-                .replace(/{streams}/g, '1 pantalla')
-                .replace(/{fecha_expiracion}/g, d);
-
-            document.getElementById('modalMessageText').innerText = currentMsgText;
-            document.getElementById('messageModal').classList.remove('hidden');
-        }
-        function copyModalMsg() { navigator.clipboard.writeText(currentMsgText); alert('Copiado'); }
-        function shareWhatsAppDemo() { window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(currentMsgText)}`, '_blank'); }
-        function shareModalWA() { window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(currentMsgText)}`, '_blank'); }
-
-        function saveEmbySettings() {
-            localStorage.setItem('embyHost', document.getElementById('embyHost').value);
-            localStorage.setItem('embyApiKey', document.getElementById('embyApiKey').value);
-            alert('¡Ajustes de Emby guardados!');
-        }
-        function loadSettings() {
-            if (localStorage.getItem('embyHost')) document.getElementById('embyHost').value = localStorage.getItem('embyHost');
-            if (localStorage.getItem('embyApiKey')) document.getElementById('embyApiKey').value = localStorage.getItem('embyApiKey');
-        }
-        function testEmbyConnection() {
-            const host = document.getElementById('embyHost').value;
-            const key = document.getElementById('embyApiKey').value;
-            fetch(`${host}/emby/System/Info?api_key=${key}`)
-                .then(r => r.json())
-                .then(d => alert(`¡Conectado exitosamente con ${d.ServerName} (v${d.Version})!`))
-                .catch(() => alert('No se pudo conectar directamente por CORS. Sin embargo, puedes usar las carpetas predeterminadas o añadir carpetas manualmente abajo.'));
-        }
-        function saveTemplate() {
-            localStorage.setItem('msgTemplate', document.getElementById('templateText').value);
-            alert('Plantilla guardada');
-        }
-
-        function initChart() {
-            const ctx = document.getElementById('streamChart').getContext('2d');
-            new Chart(ctx, {
-                type: 'line',
-                data: {
-                    labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', 'Ahora'],
-                    datasets: [{ label: 'Conexiones', data: [8, 4, 6, 15, 22, 30, 18], borderColor: '#E50914', backgroundColor: 'rgba(229, 9, 20, 0.1)', fill: true, tension: 0.4 }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { color: 'rgba(255,255,255,0.05)' } }, y: { grid: { color: 'rgba(255,255,255,0.05)' } } } }
-            });
-        }
-    </script>
-</body>
-</html>
+                try
