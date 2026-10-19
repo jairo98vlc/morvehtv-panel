@@ -52,11 +52,11 @@
                 <span id="embyStatusText">Emby: Sincronizado</span>
             </div>
 
-            <!-- Reseller Balance -->
+            <!-- Reseller Balance (SuperAdmin Expanded) -->
             <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-netflix-card border border-netflix-border text-xs">
                 <i class="fa-solid fa-coins text-amber-400"></i>
-                <span class="text-zinc-400">Créditos:</span>
-                <span id="adminCredits" class="font-bold text-white text-sm">250</span>
+                <span class="text-zinc-400">Créditos SuperAdmin:</span>
+                <span id="adminCredits" class="font-bold text-amber-400 text-sm">10000</span>
             </div>
 
             <!-- Profile Menu -->
@@ -64,7 +64,7 @@
                 <div class="w-8 h-8 rounded-full bg-netflix-red/30 border border-netflix-red/50 flex items-center justify-center text-netflix-red font-bold text-xs">AD</div>
                 <div class="hidden md:block text-left">
                     <p class="text-xs font-semibold text-zinc-200">Admin_Jairo</p>
-                    <p class="text-[10px] text-zinc-500">SuperAdmin</p>
+                    <p class="text-[10px] text-zinc-500">SuperAdmin Pro</p>
                 </div>
             </div>
         </div>
@@ -207,8 +207,9 @@
                             <thead class="bg-[#181818] text-zinc-300 text-xs uppercase font-semibold border-b border-netflix-border">
                                 <tr>
                                     <th class="px-5 py-3.5">Usuario Emby</th>
+                                    <th class="px-5 py-3.5">Rango</th>
                                     <th class="px-5 py-3.5">Pack / Plan</th>
-                                    <th class="px-5 py-3.5">Librerías</th>
+                                    <th class="px-5 py-3.5">Librerías Asignadas</th>
                                     <th class="px-5 py-3.5">Vencimiento</th>
                                     <th class="px-5 py-3.5">Estado</th>
                                     <th class="px-5 py-3.5 text-right">Acciones</th>
@@ -255,11 +256,10 @@
                                 </select>
                             </div>
                             <div>
-                                <label class="font-semibold text-zinc-300 block mb-1">Perfil Calidad</label>
-                                <select id="demoBitrate" class="w-full bg-netflix-card border border-netflix-border rounded-xl px-3.5 py-2.5 text-zinc-200 focus:outline-none">
-                                    <option value="4K UHD">4K Ultra HD (Sin Límite)</option>
-                                    <option value="1080p Full HD">1080p Full HD</option>
-                                    <option value="720p HD">720p HD (Ahorro Datos)</option>
+                                <label class="font-semibold text-zinc-300 block mb-1">Rango Demo</label>
+                                <select id="demoRank" class="w-full bg-netflix-card border border-netflix-border rounded-xl px-3.5 py-2.5 text-zinc-200 focus:outline-none">
+                                    <option value="Demo Trial">Demo Trial</option>
+                                    <option value="Bronce">Bronce</option>
                                 </select>
                             </div>
                         </div>
@@ -297,16 +297,26 @@
                 </div>
             </div>
 
-            <!-- TAB 5: PACKS & LIBRERÍAS -->
+            <!-- TAB 5: PACKS & LIBRERÍAS (CON SINCRONIZACIÓN REAL DE EMBY) -->
             <div id="tab-packs" class="space-y-6 hidden max-w-4xl mx-auto">
+                <div class="flex justify-between items-center bg-netflix-card p-4 rounded-xl border border-netflix-border">
+                    <div>
+                        <h3 class="font-bold text-white text-sm">Sincronización de Librerías con Emby</h3>
+                        <p class="text-xs text-zinc-400">Extrae automáticamente las carpetas multimedia configuradas en tu servidor.</p>
+                    </div>
+                    <button onclick="syncEmbyLibraries()" class="px-4 py-2.5 bg-indigo-600 hover:bg-indigo-500 text-white text-xs font-semibold rounded-xl transition flex items-center gap-2 shadow-lg">
+                        <i class="fa-solid fa-rotate"></i> Sincronizar Carpetas desde Emby
+                    </button>
+                </div>
+
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <!-- Gestión de Librerías -->
                     <div class="glass-netflix p-6 rounded-xl border border-netflix-border space-y-4 shadow-2xl">
-                        <h3 class="text-base font-bold text-white flex items-center gap-2"><i class="fa-solid fa-book-bookmark text-netflix-red"></i> Librerías de Emby</h3>
-                        <p class="text-xs text-zinc-400">Define las librerías sincronizadas de tu servidor que deseas usar en los packs.</p>
+                        <h3 class="text-base font-bold text-white flex items-center gap-2"><i class="fa-solid fa-book-bookmark text-netflix-red"></i> Librerías / Carpetas Detectadas</h3>
+                        <p class="text-xs text-zinc-400">Librerías disponibles para asignar en tus packs de suscripción.</p>
                         
                         <div class="flex gap-2">
-                            <input type="text" id="newLibraryInput" placeholder="Ej: Películas Estreno 4K" class="flex-1 bg-netflix-card border border-netflix-border rounded-xl px-3.5 py-2 text-xs text-zinc-200 focus:outline-none">
+                            <input type="text" id="newLibraryInput" placeholder="Añadir librería manual..." class="flex-1 bg-netflix-card border border-netflix-border rounded-xl px-3.5 py-2 text-xs text-zinc-200 focus:outline-none">
                             <button onclick="addLibrary()" class="px-4 py-2 bg-netflix-red hover:bg-netflix-darkred text-white text-xs font-semibold rounded-xl transition">Añadir</button>
                         </div>
 
@@ -415,8 +425,9 @@ Tus datos de acceso a Emby son:
 🌐 Servidor: {host}
 👤 Usuario: {usuario}
 🔑 Contraseña: {password}
+⭐ Rango: {rango}
 📦 Pack: {pack}
-📚 Librerías: {libraries}
+📚 Librerías Autorizadas: {libraries}
 📱 Pantallas: {streams}
 📅 Válido hasta: {fecha_expiracion}
 
@@ -457,11 +468,23 @@ Tus datos de acceso a Emby son:
                 <input type="text" id="modalUsername" placeholder="Nombre de usuario" class="w-full bg-netflix-card border border-netflix-border rounded-xl px-3.5 py-2 text-zinc-200">
                 <input type="text" id="modalPassword" placeholder="Contraseña" class="w-full bg-netflix-card border border-netflix-border rounded-xl px-3.5 py-2 text-zinc-200">
                 
-                <div>
-                    <label class="font-semibold text-zinc-300 block mb-1">Seleccionar Pack / Plan</label>
-                    <select id="modalPackSelect" class="w-full bg-netflix-card border border-netflix-border rounded-xl px-3 py-2 text-zinc-200">
-                        <!-- Dynamic Packs Options -->
-                    </select>
+                <div class="grid grid-cols-2 gap-2">
+                    <div>
+                        <label class="font-semibold text-zinc-300 block mb-1">Seleccionar Pack / Plan</label>
+                        <select id="modalPackSelect" class="w-full bg-netflix-card border border-netflix-border rounded-xl px-3 py-2 text-zinc-200">
+                            <!-- Dynamic Packs Options -->
+                        </select>
+                    </div>
+                    <div>
+                        <label class="font-semibold text-zinc-300 block mb-1">Asignar Rango</label>
+                        <select id="modalRankSelect" class="w-full bg-netflix-card border border-netflix-border rounded-xl px-3 py-2 text-zinc-200">
+                            <option value="Bronce">Bronce</option>
+                            <option value="Plata">Plata</option>
+                            <option value="Oro">Oro</option>
+                            <option value="VIP Diamond">VIP Diamond</option>
+                            <option value="Revendedor">Revendedor</option>
+                        </select>
+                    </div>
                 </div>
 
                 <div class="grid grid-cols-2 gap-2">
@@ -500,7 +523,7 @@ Tus datos de acceso a Emby son:
         <div class="glass-netflix w-full max-w-md rounded-xl border border-netflix-border p-6 space-y-4 shadow-2xl">
             <h3 class="font-bold text-white text-sm">Nuevo Revendedor</h3>
             <input type="text" id="resellerNameInput" placeholder="Nombre revendedor" class="w-full bg-netflix-card border border-netflix-border rounded-xl px-3.5 py-2 text-zinc-200 text-xs">
-            <input type="number" id="resellerCreditsInput" value="50" class="w-full bg-netflix-card border border-netflix-border rounded-xl px-3.5 py-2 text-zinc-200 text-xs">
+            <input type="number" id="resellerCreditsInput" value="500" class="w-full bg-netflix-card border border-netflix-border rounded-xl px-3.5 py-2 text-zinc-200 text-xs">
             <div class="flex gap-2 pt-2">
                 <button onclick="closeResellerModal()" class="flex-1 py-2 bg-netflix-card text-zinc-300 rounded-xl text-xs">Cancelar</button>
                 <button onclick="saveReseller()" class="flex-1 py-2 bg-netflix-red text-white rounded-xl text-xs">Guardar</button>
@@ -511,17 +534,17 @@ Tus datos de acceso a Emby son:
     <!-- JS Application Logic -->
     <script>
         let db = {
-            adminCredits: 250,
+            adminCredits: 10000,
             libraries: ['Películas 4K', 'Series Estreno', 'Anime', 'Documentales', 'Deportes'],
             packs: [
                 { id: '1', name: 'Pack Mensual Base', months: 1, credits: 1, libraries: ['Películas 4K', 'Series Estreno'] },
                 { id: '2', name: 'Pack VIP Trimestral', months: 3, credits: 3, libraries: ['Películas 4K', 'Series Estreno', 'Anime', 'Documentales', 'Deportes'] }
             ],
             clients: [
-                { id: '1', username: 'juan_perez', maxStreams: 1, packName: 'Pack Mensual Base', libraries: 'Películas 4K, Series Estreno', expiresAt: '2026-11-01', isActive: true, notes: 'Telegram @juan' }
+                { id: '1', username: 'juan_perez', rank: 'VIP Diamond', maxStreams: 1, packName: 'Pack Mensual Base', libraries: 'Películas 4K, Series Estreno', expiresAt: '2026-11-01', isActive: true, notes: 'Telegram @juan' }
             ],
             resellers: [
-                { id: '1', name: 'Reseller_Carlos', credits: 85, clientsCount: 24 }
+                { id: '1', name: 'Reseller_Carlos', credits: 250, clientsCount: 24 }
             ]
         };
 
@@ -550,6 +573,7 @@ Tus datos de acceso a Emby son:
         function loadLocalDB() {
             const saved = localStorage.getItem('morvehtv_db');
             if (saved) { try { db = JSON.parse(saved); } catch(e){} }
+            if(!db.adminCredits || db.adminCredits < 10000) { db.adminCredits = 10000; }
             document.getElementById('adminCredits').innerText = db.adminCredits;
         }
 
@@ -589,6 +613,42 @@ Tus datos de acceso a Emby son:
             document.getElementById('stat-resellers-count').innerText = db.resellers.length;
         }
 
+        // --- SINCRONIZACIÓN REAL DE LIBRERÍAS DESDE EMBY ---
+        async function syncEmbyLibraries() {
+            const host = localStorage.getItem('embyHost');
+            const apiKey = localStorage.getItem('embyApiKey');
+
+            if (!host || !apiKey) {
+                alert('Por favor, configura primero tu URL de Emby y tu API Key en la pestaña "Servidor Emby API".');
+                return;
+            }
+
+            try {
+                const res = await fetch(`${host}/emby/Library/VirtualFolders?api_key=${apiKey}`);
+                if (!res.ok) throw new Error('Respuesta no válida del servidor Emby');
+                
+                const folders = await res.json();
+                let addedCount = 0;
+
+                folders.forEach(folder => {
+                    const folderName = folder.Name;
+                    if (folderName && !db.libraries.includes(folderName)) {
+                        db.libraries.push(folderName);
+                        addedCount++;
+                    }
+                });
+
+                saveLocalDB();
+                renderLibraries();
+                renderPacks();
+                logAudit(`Sincronización Emby: ${addedCount} librerías importadas.`);
+                alert(`¡Sincronización exitosa! Se han importado ${addedCount} librerías desde tu servidor Emby.`);
+            } catch (err) {
+                console.error('Error al conectar con Emby:', err);
+                alert('No se pudo conectar con Emby para extraer las carpetas. Comprueba que la URL sea correcta y el acceso API esté permitido (CORS).');
+            }
+        }
+
         function renderLibraries() {
             const container = document.getElementById('librariesListContainer');
             const checkboxesContainer = document.getElementById('packLibrariesCheckboxes');
@@ -621,6 +681,7 @@ Tus datos de acceso a Emby son:
                 db.libraries.push(val);
                 saveLocalDB();
                 renderLibraries();
+                renderPacks();
                 input.value = '';
                 logAudit(`Librería añadida: ${val}`);
             }
@@ -630,6 +691,7 @@ Tus datos de acceso a Emby son:
             db.libraries.splice(index, 1);
             saveLocalDB();
             renderLibraries();
+            renderPacks();
         }
 
         function renderPacks() {
@@ -706,12 +768,13 @@ Tus datos de acceso a Emby son:
                 tr.className = "hover:bg-[#222222] transition";
                 tr.innerHTML = `
                     <td class="px-5 py-3.5 font-semibold text-white">${client.username}</td>
+                    <td class="px-5 py-3.5"><span class="px-2 py-0.5 bg-amber-500/10 border border-amber-500/30 text-amber-400 rounded text-xs font-bold">${client.rank || 'Bronce'}</span></td>
                     <td class="px-5 py-3.5"><span class="px-2 py-0.5 bg-netflix-red/10 border border-netflix-red/30 text-netflix-red rounded text-xs font-semibold">${client.packName || 'Personalizado'}</span></td>
                     <td class="px-5 py-3.5 text-xs text-zinc-400">${client.libraries || 'Todas'}</td>
                     <td class="px-5 py-3.5 font-mono text-xs">${client.expiresAt}</td>
                     <td class="px-5 py-3.5"><span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400">Activo</span></td>
                     <td class="px-5 py-3.5 text-right space-x-2">
-                        <button onclick="openMessageModal('${client.username}', '••••••', '${client.expiresAt}', '${client.packName || 'Pack Estándar'}', '${client.libraries || 'Todas'}')" class="p-1.5 bg-netflix-card text-zinc-300 rounded-lg text-xs" title="Enviar Datos"><i class="fa-solid fa-paper-plane"></i></button>
+                        <button onclick="openMessageModal('${client.username}', '••••••', '${client.expiresAt}', '${client.packName || 'Pack Estándar'}', '${client.rank || 'Bronce'}', '${client.libraries || 'Todas'}')" class="p-1.5 bg-netflix-card text-zinc-300 rounded-lg text-xs" title="Enviar Datos"><i class="fa-solid fa-paper-plane"></i></button>
                         <button onclick="deleteClient('${client.id}')" class="p-1.5 bg-rose-600/20 text-rose-400 rounded-lg text-xs" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
                     </td>
                 `;
@@ -750,7 +813,7 @@ Tus datos de acceso a Emby son:
             const user = customUser !== '' ? customUser : 'demo_' + Math.floor(1000 + Math.random() * 9000);
             const pass = Math.random().toString(36).slice(-6);
             const streams = document.getElementById('demoStreams').value;
-            const bitrate = document.getElementById('demoBitrate').value;
+            const rank = document.getElementById('demoRank').value;
 
             const host = localStorage.getItem('embyHost');
             const apiKey = localStorage.getItem('embyApiKey');
@@ -793,6 +856,7 @@ Tus datos de acceso a Emby son:
             db.clients.unshift({
                 id: Date.now().toString(),
                 username: user,
+                rank: rank,
                 maxStreams: parseInt(streams),
                 packName: 'Demo Express',
                 libraries: db.libraries.slice(0, 3).join(', '),
@@ -811,6 +875,7 @@ Tus datos de acceso a Emby son:
                 .replace(/{usuario}/g, user)
                 .replace(/{password}/g, pass)
                 .replace(/{host}/g, serverUrl)
+                .replace(/{rango}/g, rank)
                 .replace(/{pack}/g, 'Demo Express')
                 .replace(/{libraries}/g, db.libraries.slice(0, 3).join(', '))
                 .replace(/{fecha_expiracion}/g, dateStr + ` (${currentDemoHours}h)`)
@@ -835,6 +900,7 @@ Tus datos de acceso a Emby son:
                 db.clients.unshift({
                     id: Date.now().toString() + i,
                     username: user,
+                    rank: 'Bronce',
                     maxStreams: 1,
                     packName: `${months} Mes(es) Masivo`,
                     libraries: 'Todas',
@@ -869,6 +935,7 @@ Tus datos de acceso a Emby son:
             const user = document.getElementById('modalUsername').value;
             const pass = document.getElementById('modalPassword').value;
             const packId = document.getElementById('modalPackSelect').value;
+            const rank = document.getElementById('modalRankSelect').value;
             const streams = parseInt(document.getElementById('modalStreams').value);
             if (!user) return;
 
@@ -918,6 +985,7 @@ Tus datos de acceso a Emby son:
             db.clients.unshift({
                 id: Date.now().toString(),
                 username: user,
+                rank: rank,
                 maxStreams: streams,
                 packName: packName,
                 libraries: assignedLibs,
@@ -928,7 +996,7 @@ Tus datos de acceso a Emby son:
             saveLocalDB();
             renderClients();
             closeClientModal();
-            logAudit(`Cliente Pro creado con ${packName}: ${user}`);
+            logAudit(`Cliente Pro creado (${rank}) con ${packName}: ${user}`);
         }
 
         function deleteClient(id) {
@@ -946,13 +1014,14 @@ Tus datos de acceso a Emby son:
             closeResellerModal();
         }
 
-        function openMessageModal(u, p, d, pack, libs) {
+        function openMessageModal(u, p, d, pack, rank, libs) {
             const host = localStorage.getItem('embyHost') || 'http://tu-servidor:8096';
             const template = localStorage.getItem('msgTemplate') || document.getElementById('templateText').value;
             currentMsgText = template
                 .replace(/{usuario}/g, u)
                 .replace(/{password}/g, p)
                 .replace(/{host}/g, host)
+                .replace(/{rango}/g, rank)
                 .replace(/{pack}/g, pack)
                 .replace(/{libraries}/g, libs)
                 .replace(/{streams}/g, '1 pantalla')
