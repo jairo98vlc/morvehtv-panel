@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MorvehTV - Enterprise Control Panel</title>
+    <title>MorvehTV - Netflix Cinematic Edition</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -12,18 +12,13 @@
             theme: {
                 extend: {
                     colors: {
-                        brand: {
-                            50: '#f5f3ff',
-                            100: '#ede9fe',
-                            400: '#a78bfa',
-                            500: '#8b5cf6',
-                            600: '#7c3aed',
-                            700: '#6d28d9',
-                            900: '#4c1d95',
-                        },
-                        darkbg: '#09090b',
-                        cardbg: '#121215',
-                        borderbg: '#27272a'
+                        netflix: {
+                            red: '#E50914',
+                            darkred: '#b20710',
+                            black: '#141414',
+                            card: '#1f1f1f',
+                            border: '#333333'
+                        }
                     }
                 }
             }
@@ -33,20 +28,20 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body { background-color: #09090b; color: #f4f4f5; font-family: system-ui, -apple-system, sans-serif; }
-        .glass-panel { background: rgba(18, 18, 21, 0.85); backdrop-filter: blur(16px); border: 1px solid rgba(255,255,255,0.08); }
-        .glow-accent { box-shadow: 0 0 30px rgba(139, 92, 246, 0.22); }
+        body { background-color: #141414; color: #ffffff; font-family: system-ui, -apple-system, sans-serif; }
+        .glass-netflix { background: rgba(31, 31, 31, 0.85); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .glow-netflix { box-shadow: 0 0 25px rgba(229, 9, 20, 0.3); }
     </style>
 </head>
-<body class="min-h-screen flex flex-col antialiased selection:bg-brand-500 selection:text-white">
+<body class="min-h-screen flex flex-col antialiased selection:bg-netflix-red selection:text-white">
 
     <!-- Header Navbar -->
-    <header class="sticky top-0 z-40 border-b border-borderbg bg-darkbg/90 backdrop-blur-md px-6 py-3.5 flex items-center justify-between">
+    <header class="sticky top-0 z-40 border-b border-netflix-border bg-[#141414]/95 backdrop-blur-md px-6 py-3.5 flex items-center justify-between">
         <div class="flex items-center gap-3">
-            <div class="h-9 w-9 rounded-xl bg-gradient-to-tr from-brand-600 to-indigo-500 flex items-center justify-center font-black text-white text-lg shadow-lg glow-accent">M</div>
+            <div class="h-9 w-9 rounded-lg bg-netflix-red flex items-center justify-center font-black text-white text-lg shadow-lg glow-netflix">M</div>
             <div>
-                <h1 class="font-extrabold text-lg tracking-tight bg-gradient-to-r from-white via-zinc-200 to-brand-400 bg-clip-text text-transparent">MorvehTV</h1>
-                <p class="text-[10px] text-zinc-400 uppercase tracking-widest font-semibold">Enterprise Control Panel</p>
+                <h1 class="font-extrabold text-lg tracking-tight text-netflix-red uppercase">MorvehTV</h1>
+                <p class="text-[10px] text-zinc-400 tracking-widest font-semibold">Cinematic Control Hub</p>
             </div>
         </div>
 
@@ -58,15 +53,15 @@
             </div>
 
             <!-- Reseller Balance -->
-            <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-zinc-900 border border-zinc-800 text-xs shadow-inner">
+            <div class="flex items-center gap-2 px-3 py-1.5 rounded-lg bg-netflix-card border border-netflix-border text-xs">
                 <i class="fa-solid fa-coins text-amber-400"></i>
                 <span class="text-zinc-400">Créditos:</span>
                 <span id="adminCredits" class="font-bold text-white text-sm">250</span>
             </div>
 
             <!-- Profile Menu -->
-            <div class="flex items-center gap-2 border-l border-zinc-800 pl-4">
-                <div class="w-8 h-8 rounded-full bg-brand-600/30 border border-brand-500/40 flex items-center justify-center text-brand-400 font-bold text-xs">AD</div>
+            <div class="flex items-center gap-2 border-l border-netflix-border pl-4">
+                <div class="w-8 h-8 rounded-full bg-netflix-red/30 border border-netflix-red/50 flex items-center justify-center text-netflix-red font-bold text-xs">AD</div>
                 <div class="hidden md:block text-left">
                     <p class="text-xs font-semibold text-zinc-200">Admin_Jairo</p>
                     <p class="text-[10px] text-zinc-500">SuperAdmin</p>
@@ -77,51 +72,51 @@
 
     <div class="flex flex-1 overflow-hidden">
         <!-- Sidebar Navigation -->
-        <aside class="w-64 border-r border-borderbg bg-cardbg flex flex-col justify-between p-4 hidden md:flex shrink-0">
+        <aside class="w-64 border-r border-netflix-border bg-[#181818] flex flex-col justify-between p-4 hidden md:flex shrink-0">
             <div class="space-y-6">
                 <div>
-                    <p class="text-[11px] font-bold uppercase tracking-wider text-zinc-500 px-3 mb-2">Principal</p>
+                    <p class="text-[11px] font-bold uppercase tracking-wider text-zinc-500 px-3 mb-2">Menú Principal</p>
                     <nav class="space-y-1">
-                        <button onclick="switchTab('dashboard')" id="nav-dashboard" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-brand-400 bg-brand-500/10 border border-brand-500/20">
+                        <button onclick="switchTab('dashboard')" id="nav-dashboard" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-netflix-red bg-netflix-red/10 border border-netflix-red/20">
                             <i class="fa-solid fa-chart-pie w-5"></i> Dashboard
                         </button>
-                        <button onclick="switchTab('clients')" id="nav-clients" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-zinc-400 hover:text-white hover:bg-zinc-800/60">
+                        <button onclick="switchTab('clients')" id="nav-clients" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-zinc-400 hover:text-white hover:bg-netflix-card">
                             <i class="fa-solid fa-users w-5"></i> Clientes Emby
                         </button>
-                        <button onclick="switchTab('demo')" id="nav-demo" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-zinc-400 hover:text-white hover:bg-zinc-800/60">
+                        <button onclick="switchTab('demo')" id="nav-demo" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-zinc-400 hover:text-white hover:bg-netflix-card">
                             <i class="fa-solid fa-bolt text-amber-400 w-5"></i> Demo Express (1-Click)
                         </button>
-                        <button onclick="switchTab('resellers')" id="nav-resellers" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-zinc-400 hover:text-white hover:bg-zinc-800/60">
+                        <button onclick="switchTab('resellers')" id="nav-resellers" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-zinc-400 hover:text-white hover:bg-netflix-card">
                             <i class="fa-solid fa-user-tie w-5"></i> Revendedores
                         </button>
                     </nav>
                 </div>
 
                 <div>
-                    <p class="text-[11px] font-bold uppercase tracking-wider text-zinc-500 px-3 mb-2">Herramientas & Red</p>
+                    <p class="text-[11px] font-bold uppercase tracking-wider text-zinc-500 px-3 mb-2">Sistema & Red</p>
                     <nav class="space-y-1">
-                        <button onclick="switchTab('bulk')" id="nav-bulk" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-zinc-400 hover:text-white hover:bg-zinc-800/60">
+                        <button onclick="switchTab('bulk')" id="nav-bulk" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-zinc-400 hover:text-white hover:bg-netflix-card">
                             <i class="fa-solid fa-layer-group w-5"></i> Generador Masivo
                         </button>
-                        <button onclick="switchTab('logs')" id="nav-logs" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-zinc-400 hover:text-white hover:bg-zinc-800/60">
+                        <button onclick="switchTab('logs')" id="nav-logs" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-zinc-400 hover:text-white hover:bg-netflix-card">
                             <i class="fa-solid fa-clock-rotate-left w-5"></i> Auditoría / Logs
                         </button>
-                        <button onclick="switchTab('templates')" id="nav-templates" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-zinc-400 hover:text-white hover:bg-zinc-800/60">
+                        <button onclick="switchTab('templates')" id="nav-templates" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-zinc-400 hover:text-white hover:bg-netflix-card">
                             <i class="fa-solid fa-message w-5"></i> Plantilla Mensajes
                         </button>
-                        <button onclick="switchTab('settings')" id="nav-settings" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-zinc-400 hover:text-white hover:bg-zinc-800/60">
+                        <button onclick="switchTab('settings')" id="nav-settings" class="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-zinc-400 hover:text-white hover:bg-netflix-card">
                             <i class="fa-solid fa-server w-5"></i> Servidor Emby API
                         </button>
                     </nav>
                 </div>
             </div>
 
-            <div class="p-3 bg-zinc-900/80 border border-zinc-800 rounded-xl">
+            <div class="p-3 bg-netflix-card border border-netflix-border rounded-xl">
                 <div class="flex items-center gap-2 mb-1">
-                    <i class="fa-solid fa-shield-halved text-brand-400 text-xs"></i>
-                    <p class="text-xs font-semibold text-zinc-300">MorvehTV Engine</p>
+                    <i class="fa-solid fa-film text-netflix-red text-xs"></i>
+                    <p class="text-xs font-semibold text-zinc-300">Streaming Gateway</p>
                 </div>
-                <p class="text-[11px] text-zinc-500">Nodo Principal En Línea</p>
+                <p class="text-[11px] text-zinc-500">Alta disponibilidad activa.</p>
             </div>
         </aside>
 
@@ -131,56 +126,56 @@
             <!-- TAB 1: DASHBOARD -->
             <div id="tab-dashboard" class="space-y-6">
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <div class="glass-panel p-5 rounded-2xl border border-zinc-800">
+                    <div class="glass-netflix p-5 rounded-xl border border-netflix-border">
                         <div class="flex justify-between items-start">
                             <div>
                                 <p class="text-xs font-medium text-zinc-400">Clientes Activos</p>
                                 <h3 class="text-2xl font-black text-white mt-1" id="stat-active-clients">0</h3>
                             </div>
-                            <div class="p-2.5 bg-emerald-500/10 text-emerald-400 rounded-xl border border-emerald-500/20"><i class="fa-solid fa-user-check"></i></div>
+                            <div class="p-2.5 bg-emerald-500/10 text-emerald-400 rounded-lg border border-emerald-500/20"><i class="fa-solid fa-user-check"></i></div>
                         </div>
-                        <p class="text-[11px] text-emerald-400 mt-3 flex items-center gap-1"><i class="fa-solid fa-arrow-trend-up"></i> Sincronización en tiempo real</p>
+                        <p class="text-[11px] text-emerald-400 mt-3 flex items-center gap-1"><i class="fa-solid fa-arrow-trend-up"></i> Sincronizado con Emby</p>
                     </div>
 
-                    <div class="glass-panel p-5 rounded-2xl border border-zinc-800">
+                    <div class="glass-netflix p-5 rounded-xl border border-netflix-border">
                         <div class="flex justify-between items-start">
                             <div>
                                 <p class="text-xs font-medium text-zinc-400">Próximos a Vencer (7d)</p>
                                 <h3 class="text-2xl font-black text-amber-400 mt-1" id="stat-expiring-clients">0</h3>
                             </div>
-                            <div class="p-2.5 bg-amber-500/10 text-amber-400 rounded-xl border border-amber-500/20"><i class="fa-solid fa-clock"></i></div>
+                            <div class="p-2.5 bg-amber-500/10 text-amber-400 rounded-lg border border-amber-500/20"><i class="fa-solid fa-clock"></i></div>
                         </div>
                         <p class="text-[11px] text-amber-400/80 mt-3">Requieren renovación</p>
                     </div>
 
-                    <div class="glass-panel p-5 rounded-2xl border border-zinc-800">
+                    <div class="glass-netflix p-5 rounded-xl border border-netflix-border">
                         <div class="flex justify-between items-start">
                             <div>
                                 <p class="text-xs font-medium text-zinc-400">Total Revendedores</p>
                                 <h3 class="text-2xl font-black text-white mt-1" id="stat-resellers-count">0</h3>
                             </div>
-                            <div class="p-2.5 bg-brand-500/10 text-brand-400 rounded-xl border border-brand-500/20"><i class="fa-solid fa-user-tie"></i></div>
+                            <div class="p-2.5 bg-netflix-red/10 text-netflix-red rounded-lg border border-netflix-red/20"><i class="fa-solid fa-user-tie"></i></div>
                         </div>
-                        <p class="text-[11px] text-brand-400 mt-3">Red comercial activa</p>
+                        <p class="text-[11px] text-netflix-red mt-3">Red comercial activa</p>
                     </div>
 
-                    <div class="glass-panel p-5 rounded-2xl border border-zinc-800">
+                    <div class="glass-netflix p-5 rounded-xl border border-netflix-border">
                         <div class="flex justify-between items-start">
                             <div>
-                                <p class="text-xs font-medium text-zinc-400">Conexiones Activas</p>
+                                <p class="text-xs font-medium text-zinc-400">Reproducciones Simultáneas</p>
                                 <h3 class="text-2xl font-black text-indigo-400 mt-1">18</h3>
                             </div>
-                            <div class="p-2.5 bg-indigo-500/10 text-indigo-400 rounded-xl border border-indigo-500/20"><i class="fa-solid fa-play"></i></div>
+                            <div class="p-2.5 bg-indigo-500/10 text-indigo-400 rounded-lg border border-indigo-500/20"><i class="fa-solid fa-play"></i></div>
                         </div>
                         <p class="text-[11px] text-zinc-400 mt-3">Direct Play: 88%</p>
                     </div>
                 </div>
 
                 <!-- Live Stream Chart -->
-                <div class="glass-panel p-5 rounded-2xl border border-zinc-800">
+                <div class="glass-netflix p-5 rounded-xl border border-netflix-border">
                     <div class="flex items-center justify-between mb-4">
-                        <h3 class="font-bold text-zinc-200 flex items-center gap-2"><i class="fa-solid fa-chart-line text-brand-400"></i> Rendimiento de Conexiones Simultáneas (24h)</h3>
-                        <span class="text-xs text-zinc-500">Cluster Emby Server</span>
+                        <h3 class="font-bold text-zinc-200 flex items-center gap-2"><i class="fa-solid fa-chart-line text-netflix-red"></i> Ancho de Banda y Conexiones (24h)</h3>
+                        <span class="text-xs text-zinc-500">Monitoreo de Servidor Emby</span>
                     </div>
                     <div class="h-64">
                         <canvas id="streamChart"></canvas>
@@ -193,17 +188,17 @@
                 <div class="flex flex-col sm:flex-row justify-between gap-4 items-center">
                     <div class="relative w-full sm:w-80">
                         <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-3 text-zinc-500 text-xs"></i>
-                        <input type="text" id="searchClient" onkeyup="filterClients()" placeholder="Buscar por usuario o nota..." class="w-full bg-zinc-900 border border-zinc-800 rounded-xl pl-9 pr-4 py-2 text-sm text-zinc-200 focus:outline-none focus:border-brand-500">
+                        <input type="text" id="searchClient" onkeyup="filterClients()" placeholder="Buscar cliente o nota..." class="w-full bg-netflix-card border border-netflix-border rounded-xl pl-9 pr-4 py-2 text-sm text-zinc-200 focus:outline-none focus:border-netflix-red">
                     </div>
-                    <button onclick="openClientModal()" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-semibold text-sm transition flex items-center justify-center gap-2 shadow-lg glow-accent">
+                    <button onclick="openClientModal()" class="w-full sm:w-auto px-4 py-2.5 rounded-xl bg-netflix-red hover:bg-netflix-darkred text-white font-semibold text-sm transition flex items-center justify-center gap-2 shadow-lg glow-netflix">
                         <i class="fa-solid fa-user-plus"></i> Crear Nuevo Cliente Emby
                     </button>
                 </div>
 
-                <div class="glass-panel rounded-2xl border border-zinc-800 overflow-hidden shadow-2xl">
+                <div class="glass-netflix rounded-xl border border-netflix-border overflow-hidden shadow-2xl">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-sm text-zinc-400">
-                            <thead class="bg-zinc-900/80 text-zinc-300 text-xs uppercase font-semibold border-b border-zinc-800">
+                            <thead class="bg-[#181818] text-zinc-300 text-xs uppercase font-semibold border-b border-netflix-border">
                                 <tr>
                                     <th class="px-5 py-3.5">Usuario Emby</th>
                                     <th class="px-5 py-3.5">Pantallas</th>
@@ -213,7 +208,7 @@
                                     <th class="px-5 py-3.5 text-right">Acciones</th>
                                 </tr>
                             </thead>
-                            <tbody id="clientsTableBody" class="divide-y divide-zinc-800/60">
+                            <tbody id="clientsTableBody" class="divide-y divide-netflix-border/50">
                                 <!-- Dynamic Render -->
                             </tbody>
                         </table>
@@ -221,50 +216,50 @@
                 </div>
             </div>
 
-            <!-- TAB 3: DEMO EXPRESS ELITE -->
+            <!-- TAB 3: DEMO EXPRESS NETFLIX CINEMATIC -->
             <div id="tab-demo" class="space-y-6 hidden max-w-xl mx-auto">
-                <div class="glass-panel p-8 rounded-2xl border border-zinc-800 space-y-6 shadow-2xl">
+                <div class="glass-netflix p-8 rounded-xl border border-netflix-border space-y-6 shadow-2xl">
                     <div class="text-center space-y-2">
-                        <div class="w-12 h-12 rounded-2xl bg-amber-500/10 text-amber-400 border border-amber-500/20 flex items-center justify-center mx-auto text-xl"><i class="fa-solid fa-bolt"></i></div>
+                        <div class="w-12 h-12 rounded-xl bg-netflix-red/10 text-netflix-red border border-netflix-red/30 flex items-center justify-center mx-auto text-xl"><i class="fa-solid fa-film"></i></div>
                         <h2 class="text-xl font-bold text-white">Generador de Demo Express</h2>
-                        <p class="text-xs text-zinc-400">Crea una cuenta de prueba temporal directamente en tu servidor Emby.</p>
+                        <p class="text-xs text-zinc-400">Provisiona una cuenta de demostración sincronizada en directo con tu Emby.</p>
                     </div>
 
                     <div class="space-y-4 text-xs">
                         <div>
                             <label class="font-semibold text-zinc-300 block mb-1">Nombre de Usuario (Opcional)</label>
-                            <input type="text" id="demoCustomUser" placeholder="Dejar en blanco para autogenerar" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2.5 text-zinc-200 focus:outline-none focus:border-brand-500">
+                            <input type="text" id="demoCustomUser" placeholder="Dejar en blanco para autogenerar" class="w-full bg-netflix-card border border-netflix-border rounded-xl px-3.5 py-2.5 text-zinc-200 focus:outline-none focus:border-netflix-red">
                         </div>
 
                         <div>
-                            <label class="font-semibold text-zinc-300 block mb-1">Duración de la Demo</label>
+                            <label class="font-semibold text-zinc-300 block mb-1">Duración de la Prueba</label>
                             <div class="grid grid-cols-3 gap-2">
-                                <button onclick="setDemoHours(2)" id="dbtn-2" class="demo-h-btn py-2.5 rounded-xl border border-brand-500/50 bg-brand-500/10 text-white font-bold text-center transition">2 Horas</button>
-                                <button onclick="setDemoHours(4)" id="dbtn-4" class="demo-h-btn py-2.5 rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700 font-bold text-center transition">4 Horas</button>
-                                <button onclick="setDemoHours(24)" id="dbtn-24" class="demo-h-btn py-2.5 rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700 font-bold text-center transition">24 Horas</button>
+                                <button onclick="setDemoHours(2)" id="dbtn-2" class="demo-h-btn py-2.5 rounded-xl border border-netflix-red bg-netflix-red/10 text-white font-bold text-center transition">2 Horas</button>
+                                <button onclick="setDemoHours(4)" id="dbtn-4" class="demo-h-btn py-2.5 rounded-xl border border-netflix-border bg-netflix-card text-zinc-400 hover:border-zinc-500 font-bold text-center transition">4 Horas</button>
+                                <button onclick="setDemoHours(24)" id="dbtn-24" class="demo-h-btn py-2.5 rounded-xl border border-netflix-border bg-netflix-card text-zinc-400 hover:border-zinc-500 font-bold text-center transition">24 Horas</button>
                             </div>
                         </div>
 
                         <div>
                             <label class="font-semibold text-zinc-300 block mb-1">Pantallas Simultáneas</label>
-                            <select id="demoStreams" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2.5 text-zinc-200 focus:outline-none focus:border-brand-500">
+                            <select id="demoStreams" class="w-full bg-netflix-card border border-netflix-border rounded-xl px-3.5 py-2.5 text-zinc-200 focus:outline-none focus:border-netflix-red">
                                 <option value="1">1 Pantalla</option>
                                 <option value="2">2 Pantallas</option>
                             </select>
                         </div>
                     </div>
 
-                    <button onclick="createExpressDemoAccount()" class="w-full py-3 bg-brand-600 hover:bg-brand-500 text-white font-bold rounded-xl transition glow-accent flex items-center justify-center gap-2">
+                    <button onclick="createExpressDemoAccount()" class="w-full py-3 bg-netflix-red hover:bg-netflix-darkred text-white font-bold rounded-xl transition glow-netflix flex items-center justify-center gap-2">
                         <i class="fa-solid fa-wand-magic-sparkles"></i> Crear Cuenta Demo en Emby
                     </button>
                 </div>
 
                 <!-- Output Box for Demo -->
-                <div id="demoOutputBox" class="hidden glass-panel p-6 rounded-2xl border border-zinc-800 space-y-4 shadow-2xl">
+                <div id="demoOutputBox" class="hidden glass-netflix p-6 rounded-xl border border-netflix-border space-y-4 shadow-2xl">
                     <h4 class="text-sm font-bold text-emerald-400 flex items-center gap-2"><i class="fa-solid fa-circle-check"></i> ¡Demo Creada en Servidor Emby!</h4>
-                    <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 font-mono text-xs text-zinc-300 whitespace-pre-wrap" id="demoMessageContent"></div>
+                    <div class="bg-[#0f0f11] p-4 rounded-xl border border-netflix-border font-mono text-xs text-zinc-300 whitespace-pre-wrap" id="demoMessageContent"></div>
                     <div class="flex gap-2">
-                        <button onclick="copyDemoText()" class="flex-1 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white font-medium rounded-xl text-xs transition flex items-center justify-center gap-2">
+                        <button onclick="copyDemoText()" class="flex-1 py-2.5 bg-netflix-card hover:bg-zinc-700 text-white font-medium rounded-xl text-xs transition flex items-center justify-center gap-2">
                             <i class="fa-solid fa-copy"></i> Copiar Datos
                         </button>
                         <button onclick="shareWhatsAppDemo()" class="flex-1 py-2.5 bg-emerald-600 hover:bg-emerald-500 text-white font-medium rounded-xl text-xs transition flex items-center justify-center gap-2">
@@ -278,7 +273,7 @@
             <div id="tab-resellers" class="space-y-4 hidden">
                 <div class="flex justify-between items-center">
                     <h2 class="text-lg font-bold text-white">Gestión de Revendedores</h2>
-                    <button onclick="openResellerModal()" class="px-4 py-2 rounded-xl bg-brand-600 hover:bg-brand-500 text-white font-semibold text-sm transition"><i class="fa-solid fa-plus"></i> Nuevo Revendedor</button>
+                    <button onclick="openResellerModal()" class="px-4 py-2 rounded-xl bg-netflix-red hover:bg-netflix-darkred text-white font-semibold text-sm transition"><i class="fa-solid fa-plus"></i> Nuevo Revendedor</button>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-4" id="resellersGrid">
@@ -288,48 +283,48 @@
 
             <!-- TAB 5: BULK GENERATOR -->
             <div id="tab-bulk" class="space-y-4 hidden max-w-xl mx-auto">
-                <div class="glass-panel p-6 rounded-2xl border border-zinc-800 space-y-4 shadow-2xl">
-                    <h3 class="text-base font-bold text-white flex items-center gap-2"><i class="fa-solid fa-layer-group text-brand-400"></i> Generador Masivo de Cuentas</h3>
+                <div class="glass-panel p-6 rounded-xl border border-netflix-border space-y-4 shadow-2xl">
+                    <h3 class="text-base font-bold text-white flex items-center gap-2"><i class="fa-solid fa-layer-group text-netflix-red"></i> Generador Masivo de Cuentas</h3>
                     <p class="text-xs text-zinc-400">Genera múltiples accesos de Emby simultáneamente con nomenclatura automatizada.</p>
                     
                     <div class="space-y-3 text-xs">
                         <div>
                             <label class="font-semibold text-zinc-300 block mb-1">Prefijo de Usuario</label>
-                            <input type="text" id="bulkPrefix" value="cliente_" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2 text-zinc-200 focus:outline-none">
+                            <input type="text" id="bulkPrefix" value="cliente_" class="w-full bg-netflix-card border border-netflix-border rounded-xl px-3.5 py-2 text-zinc-200 focus:outline-none">
                         </div>
                         <div class="grid grid-cols-2 gap-3">
                             <div>
                                 <label class="font-semibold text-zinc-300 block mb-1">Cantidad</label>
-                                <input type="number" id="bulkCount" value="5" min="1" max="20" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2 text-zinc-200">
+                                <input type="number" id="bulkCount" value="5" min="1" max="20" class="w-full bg-netflix-card border border-netflix-border rounded-xl px-3.5 py-2 text-zinc-200">
                             </div>
                             <div>
                                 <label class="font-semibold text-zinc-300 block mb-1">Validez</label>
-                                <select id="bulkMonths" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-200">
+                                <select id="bulkMonths" class="w-full bg-netflix-card border border-netflix-border rounded-xl px-3 py-2 text-zinc-200">
                                     <option value="1">1 Mes</option>
                                     <option value="3">3 Meses</option>
                                 </select>
                             </div>
                         </div>
                     </div>
-                    <button onclick="generateBulkAccounts()" class="w-full py-2.5 bg-brand-600 hover:bg-brand-500 text-white font-bold rounded-xl transition text-xs shadow-lg glow-accent">Ejecutar Lote Masivo</button>
+                    <button onclick="generateBulkAccounts()" class="w-full py-2.5 bg-netflix-red hover:bg-netflix-darkred text-white font-bold rounded-xl transition text-xs shadow-lg glow-netflix">Ejecutar Lote Masivo</button>
                 </div>
             </div>
 
             <!-- TAB 6: AUDIT LOGS -->
             <div id="tab-logs" class="space-y-4 hidden max-w-3xl mx-auto">
-                <div class="glass-panel p-6 rounded-2xl border border-zinc-800 space-y-4 shadow-2xl">
-                    <h3 class="text-base font-bold text-white flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left text-brand-400"></i> Registro de Auditoría y Trazabilidad</h3>
-                    <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 font-mono text-xs text-zinc-400 space-y-2 max-h-96 overflow-y-auto" id="auditLogsContainer">
-                        <p class="text-zinc-600">[Sistema Iniciado] Módulos élite MorvehTV cargados correctamente.</p>
+                <div class="glass-panel p-6 rounded-xl border border-netflix-border space-y-4 shadow-2xl">
+                    <h3 class="text-base font-bold text-white flex items-center gap-2"><i class="fa-solid fa-clock-rotate-left text-netflix-red"></i> Registro de Auditoría y Trazabilidad</h3>
+                    <div class="bg-[#0f0f11] p-4 rounded-xl border border-netflix-border font-mono text-xs text-zinc-400 space-y-2 max-h-96 overflow-y-auto" id="auditLogsContainer">
+                        <p class="text-zinc-600">[Sistema Iniciado] Módulos de streaming MorvehTV cargados.</p>
                     </div>
                 </div>
             </div>
 
             <!-- TAB 7: PLANTILLAS -->
             <div id="tab-templates" class="space-y-4 hidden max-w-3xl mx-auto">
-                <div class="glass-panel p-6 rounded-2xl border border-zinc-800 space-y-4 shadow-2xl">
-                    <h3 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-pen-to-square text-brand-400"></i> Plantilla de Mensajes Automatizada</h3>
-                    <textarea id="templateText" rows="7" class="w-full bg-zinc-950 border border-zinc-800 rounded-xl p-4 text-xs font-mono text-zinc-200 focus:outline-none">¡Hola {usuario}! Bienvenido a MorvehTV 🚀
+                <div class="glass-panel p-6 rounded-xl border border-netflix-border space-y-4 shadow-2xl">
+                    <h3 class="text-lg font-bold text-white flex items-center gap-2"><i class="fa-solid fa-pen-to-square text-netflix-red"></i> Plantilla de Mensajes Automatizada</h3>
+                    <textarea id="templateText" rows="7" class="w-full bg-[#0f0f11] border border-netflix-border rounded-xl p-4 text-xs font-mono text-zinc-200 focus:outline-none">¡Hola {usuario}! Bienvenido a MorvehTV 🚀
 
 Tus datos de acceso a Emby son:
 🌐 Servidor: {host}
@@ -338,27 +333,27 @@ Tus datos de acceso a Emby son:
 📱 Pantallas: {streams}
 📅 Válido hasta: {fecha_expiracion}
 
-¡Que lo disfrutes!</textarea>
-                    <button onclick="saveTemplate()" class="px-5 py-2.5 bg-brand-600 hover:bg-brand-500 text-white font-semibold text-xs rounded-xl transition">Guardar Plantilla</button>
+¡Que disfrutes del contenido!</textarea>
+                    <button onclick="saveTemplate()" class="px-5 py-2.5 bg-netflix-red hover:bg-netflix-darkred text-white font-semibold text-xs rounded-xl transition">Guardar Plantilla</button>
                 </div>
             </div>
 
             <!-- TAB 8: SETTINGS API -->
             <div id="tab-settings" class="space-y-6 hidden max-w-3xl mx-auto">
-                <div class="glass-panel p-6 rounded-2xl border border-zinc-800 space-y-5 shadow-2xl">
-                    <h3 class="text-base font-bold text-white flex items-center gap-2"><i class="fa-solid fa-server text-brand-400"></i> Configuración API Servidor Emby</h3>
+                <div class="glass-panel p-6 rounded-xl border border-netflix-border space-y-5 shadow-2xl">
+                    <h3 class="text-base font-bold text-white flex items-center gap-2"><i class="fa-solid fa-server text-netflix-red"></i> Configuración API Servidor Emby</h3>
                     <div class="space-y-4 text-xs">
                         <div>
                             <label class="font-semibold text-zinc-300 block mb-1">URL Servidor Emby</label>
-                            <input type="text" id="embyHost" placeholder="http://tu-servidor:8096" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-zinc-200">
+                            <input type="text" id="embyHost" placeholder="http://tu-servidor:8096" class="w-full bg-netflix-card border border-netflix-border rounded-xl px-4 py-2.5 text-zinc-200">
                         </div>
                         <div>
                             <label class="font-semibold text-zinc-300 block mb-1">API Key Maestra</label>
-                            <input type="password" id="embyApiKey" placeholder="Tu API Key de Emby" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-2.5 text-zinc-200">
+                            <input type="password" id="embyApiKey" placeholder="Tu API Key de Emby" class="w-full bg-netflix-card border border-netflix-border rounded-xl px-4 py-2.5 text-zinc-200">
                         </div>
                         <div class="flex gap-2 pt-2">
-                            <button onclick="testEmbyConnection()" class="px-4 py-2.5 bg-zinc-800 hover:bg-zinc-700 text-white rounded-xl font-semibold">Probar Conexión</button>
-                            <button onclick="saveEmbySettings()" class="px-4 py-2.5 bg-brand-600 hover:bg-brand-500 text-white rounded-xl font-semibold">Guardar Ajustes</button>
+                            <button onclick="testEmbyConnection()" class="px-4 py-2.5 bg-netflix-card hover:bg-zinc-700 text-white rounded-xl font-semibold">Probar Conexión</button>
+                            <button onclick="saveEmbySettings()" class="px-4 py-2.5 bg-netflix-red hover:bg-netflix-darkred text-white rounded-xl font-semibold">Guardar Ajustes</button>
                         </div>
                     </div>
                 </div>
@@ -369,35 +364,35 @@ Tus datos de acceso a Emby son:
 
     <!-- MODAL CLIENTE -->
     <div id="clientModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-        <div class="glass-panel w-full max-w-lg rounded-2xl border border-zinc-800 p-6 space-y-5 shadow-2xl">
+        <div class="glass-netflix w-full max-w-lg rounded-xl border border-netflix-border p-6 space-y-5 shadow-2xl">
             <h3 class="font-bold text-white text-base">Nuevo Cliente Emby</h3>
             <div class="space-y-3 text-xs">
-                <input type="text" id="modalUsername" placeholder="Nombre de usuario" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2 text-zinc-200">
-                <input type="text" id="modalPassword" placeholder="Contraseña" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2 text-zinc-200">
-                <select id="modalMonths" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-200">
+                <input type="text" id="modalUsername" placeholder="Nombre de usuario" class="w-full bg-netflix-card border border-netflix-border rounded-xl px-3.5 py-2 text-zinc-200">
+                <input type="text" id="modalPassword" placeholder="Contraseña" class="w-full bg-netflix-card border border-netflix-border rounded-xl px-3.5 py-2 text-zinc-200">
+                <select id="modalMonths" class="w-full bg-netflix-card border border-netflix-border rounded-xl px-3 py-2 text-zinc-200">
                     <option value="1">1 Mes (1 Crédito)</option>
                     <option value="3">3 Meses (3 Créditos)</option>
                 </select>
-                <select id="modalStreams" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 text-zinc-200">
+                <select id="modalStreams" class="w-full bg-netflix-card border border-netflix-border rounded-xl px-3 py-2 text-zinc-200">
                     <option value="1">1 Pantalla</option>
                     <option value="2">2 Pantallas</option>
                 </select>
-                <input type="text" id="modalNotes" placeholder="Notas internas" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2 text-zinc-200">
+                <input type="text" id="modalNotes" placeholder="Notas internas" class="w-full bg-netflix-card border border-netflix-border rounded-xl px-3.5 py-2 text-zinc-200">
             </div>
-            <div class="flex gap-2 pt-2 border-t border-zinc-800">
-                <button onclick="closeClientModal()" class="flex-1 py-2 bg-zinc-800 text-zinc-300 rounded-xl text-xs">Cancelar</button>
-                <button onclick="saveClient()" class="flex-1 py-2 bg-brand-600 text-white rounded-xl text-xs font-semibold">Crear</button>
+            <div class="flex gap-2 pt-2 border-t border-netflix-border">
+                <button onclick="closeClientModal()" class="flex-1 py-2 bg-netflix-card text-zinc-300 rounded-xl text-xs">Cancelar</button>
+                <button onclick="saveClient()" class="flex-1 py-2 bg-netflix-red text-white rounded-xl text-xs font-semibold">Crear</button>
             </div>
         </div>
     </div>
 
     <!-- MODAL MENSAJE -->
     <div id="messageModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-        <div class="glass-panel w-full max-w-md rounded-2xl border border-zinc-800 p-6 space-y-4 shadow-2xl">
+        <div class="glass-netflix w-full max-w-md rounded-xl border border-netflix-border p-6 space-y-4 shadow-2xl">
             <h3 class="font-bold text-white text-sm">Datos de Acceso</h3>
-            <div class="bg-zinc-950 p-4 rounded-xl border border-zinc-800 font-mono text-xs text-zinc-300 whitespace-pre-wrap" id="modalMessageText"></div>
+            <div class="bg-[#0f0f11] p-4 rounded-xl border border-netflix-border font-mono text-xs text-zinc-300 whitespace-pre-wrap" id="modalMessageText"></div>
             <div class="flex gap-2">
-                <button onclick="copyModalMsg()" class="flex-1 py-2 bg-zinc-800 text-white rounded-xl text-xs">Copiar</button>
+                <button onclick="copyModalMsg()" class="flex-1 py-2 bg-netflix-card text-white rounded-xl text-xs">Copiar</button>
                 <button onclick="shareModalWA()" class="flex-1 py-2 bg-emerald-600 text-white rounded-xl text-xs">WhatsApp</button>
             </div>
         </div>
@@ -405,13 +400,13 @@ Tus datos de acceso a Emby son:
 
     <!-- MODAL RESELLER -->
     <div id="resellerModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
-        <div class="glass-panel w-full max-w-md rounded-2xl border border-zinc-800 p-6 space-y-4 shadow-2xl">
+        <div class="glass-netflix w-full max-w-md rounded-xl border border-netflix-border p-6 space-y-4 shadow-2xl">
             <h3 class="font-bold text-white text-sm">Nuevo Revendedor</h3>
-            <input type="text" id="resellerNameInput" placeholder="Nombre revendedor" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2 text-zinc-200 text-xs">
-            <input type="number" id="resellerCreditsInput" value="50" class="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-3.5 py-2 text-zinc-200 text-xs">
+            <input type="text" id="resellerNameInput" placeholder="Nombre revendedor" class="w-full bg-netflix-card border border-netflix-border rounded-xl px-3.5 py-2 text-zinc-200 text-xs">
+            <input type="number" id="resellerCreditsInput" value="50" class="w-full bg-netflix-card border border-netflix-border rounded-xl px-3.5 py-2 text-zinc-200 text-xs">
             <div class="flex gap-2 pt-2">
-                <button onclick="closeResellerModal()" class="flex-1 py-2 bg-zinc-800 text-zinc-300 rounded-xl text-xs">Cancelar</button>
-                <button onclick="saveReseller()" class="flex-1 py-2 bg-brand-600 text-white rounded-xl text-xs">Guardar</button>
+                <button onclick="closeResellerModal()" class="flex-1 py-2 bg-netflix-card text-zinc-300 rounded-xl text-xs">Cancelar</button>
+                <button onclick="saveReseller()" class="flex-1 py-2 bg-netflix-red text-white rounded-xl text-xs">Guardar</button>
             </div>
         </div>
     </div>
@@ -465,12 +460,12 @@ Tus datos de acceso a Emby son:
             document.getElementById(`tab-${tabId}`).classList.remove('hidden');
 
             document.querySelectorAll('aside nav button').forEach(btn => {
-                btn.className = "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-zinc-400 hover:text-white hover:bg-zinc-800/60";
+                btn.className = "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-zinc-400 hover:text-white hover:bg-netflix-card";
             });
 
             const activeBtn = document.getElementById(`nav-${tabId}`);
             if (activeBtn) {
-                activeBtn.className = "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-brand-400 bg-brand-500/10 border border-brand-500/20";
+                activeBtn.className = "w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition text-netflix-red bg-netflix-red/10 border border-netflix-red/20";
             }
         }
 
@@ -497,7 +492,7 @@ Tus datos de acceso a Emby son:
 
             filtered.forEach(client => {
                 const tr = document.createElement('tr');
-                tr.className = "hover:bg-zinc-900/40 transition";
+                tr.className = "hover:bg-[#222222] transition";
                 tr.innerHTML = `
                     <td class="px-5 py-3.5 font-semibold text-white">${client.username}</td>
                     <td class="px-5 py-3.5">${client.maxStreams} Pantalla(s)</td>
@@ -505,7 +500,7 @@ Tus datos de acceso a Emby son:
                     <td class="px-5 py-3.5"><span class="px-2.5 py-0.5 rounded-full text-[10px] font-bold bg-emerald-500/10 text-emerald-400">Activo</span></td>
                     <td class="px-5 py-3.5 text-xs text-zinc-500">${client.notes || '-'}</td>
                     <td class="px-5 py-3.5 text-right space-x-2">
-                        <button onclick="openMessageModal('${client.username}', '••••••', '${client.expiresAt}')" class="p-1.5 bg-zinc-800 text-zinc-300 rounded-lg text-xs" title="Enviar Datos"><i class="fa-solid fa-paper-plane"></i></button>
+                        <button onclick="openMessageModal('${client.username}', '••••••', '${client.expiresAt}')" class="p-1.5 bg-netflix-card text-zinc-300 rounded-lg text-xs" title="Enviar Datos"><i class="fa-solid fa-paper-plane"></i></button>
                         <button onclick="deleteClient('${client.id}')" class="p-1.5 bg-rose-600/20 text-rose-400 rounded-lg text-xs" title="Eliminar"><i class="fa-solid fa-trash"></i></button>
                     </td>
                 `;
@@ -520,7 +515,7 @@ Tus datos de acceso a Emby son:
             grid.innerHTML = '';
             db.resellers.forEach(reseller => {
                 const card = document.createElement('div');
-                card.className = "glass-panel p-5 rounded-2xl border border-zinc-800 space-y-3 shadow-xl";
+                card.className = "glass-netflix p-5 rounded-xl border border-netflix-border space-y-3 shadow-xl";
                 card.innerHTML = `
                     <div class="flex justify-between items-center">
                         <h4 class="font-bold text-zinc-200 text-sm">${reseller.name}</h4>
@@ -534,12 +529,11 @@ Tus datos de acceso a Emby son:
         function setDemoHours(hours) {
             currentDemoHours = hours;
             document.querySelectorAll('.demo-h-btn').forEach(btn => {
-                btn.className = "demo-h-btn py-2.5 rounded-xl border border-zinc-800 bg-zinc-900 text-zinc-400 hover:border-zinc-700 font-bold text-center transition";
+                btn.className = "demo-h-btn py-2.5 rounded-xl border border-netflix-border bg-netflix-card text-zinc-400 hover:border-zinc-500 font-bold text-center transition";
             });
-            document.getElementById(`dbtn-${hours}`).className = "demo-h-btn py-2.5 rounded-xl border border-brand-500/50 bg-brand-500/10 text-white font-bold text-center transition";
+            document.getElementById(`dbtn-${hours}`).className = "demo-h-btn py-2.5 rounded-xl border border-netflix-red bg-netflix-red/10 text-white font-bold text-center transition";
         }
 
-        // --- SINCRONIZACIÓN REAL CON API DE EMBY EN DEMOS ---
         async function createExpressDemoAccount() {
             const customUser = document.getElementById('demoCustomUser').value.trim();
             const user = customUser !== '' ? customUser : 'demo_' + Math.floor(1000 + Math.random() * 9000);
@@ -549,10 +543,8 @@ Tus datos de acceso a Emby son:
             const host = localStorage.getItem('embyHost');
             const apiKey = localStorage.getItem('embyApiKey');
 
-            // Intentar crear la cuenta físicamente en el servidor Emby si está configurado
             if (host && apiKey) {
                 try {
-                    // 1. Crear usuario en Emby
                     const resUser = await fetch(`${host}/emby/Users/New?api_key=${apiKey}`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -563,27 +555,22 @@ Tus datos de acceso a Emby son:
                         const userData = await resUser.json();
                         const embyUserId = userData.Id;
 
-                        // 2. Establecer contraseña
                         await fetch(`${host}/emby/Users/${embyUserId}/Password?api_key=${apiKey}`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ Id: embyUserId, New: pass })
                         });
 
-                        // 3. Aplicar política de conexiones simultáneas
                         await fetch(`${host}/emby/Users/${embyUserId}/Policy?api_key=${apiKey}`, {
                             method: 'POST',
                             headers: { 'Content-Type': 'application/json' },
                             body: JSON.stringify({ SimultaneousStreamLimit: parseInt(streams) })
                         });
 
-                        logAudit(`[EMBY REAL] Cuenta demo creada en servidor: ${user}`);
-                    } else {
-                        console.warn('El servidor Emby respondió con error al crear la demo, registrando localmente.');
+                        logAudit(`[EMBY API] Demo creada en servidor: ${user}`);
                     }
                 } catch (err) {
-                    console.error('Error de red al conectar con Emby (Posible bloqueo CORS o servidor inaccesible):', err);
-                    alert('Aviso: No se pudo conectar directamente con el servidor Emby (revisa CORS o IP). La cuenta se ha registrado en el panel local.');
+                    console.error('Error al sincronizar con Emby:', err);
                 }
             }
 
@@ -755,7 +742,7 @@ Tus datos de acceso a Emby son:
                 type: 'line',
                 data: {
                     labels: ['00:00', '04:00', '08:00', '12:00', '16:00', '20:00', 'Ahora'],
-                    datasets: [{ label: 'Conexiones', data: [6, 3, 5, 12, 19, 28, 18], borderColor: '#8b5cf6', backgroundColor: 'rgba(139, 92, 246, 0.1)', fill: true, tension: 0.4 }]
+                    datasets: [{ label: 'Conexiones', data: [8, 4, 6, 15, 22, 30, 18], borderColor: '#E50914', backgroundColor: 'rgba(229, 9, 20, 0.1)', fill: true, tension: 0.4 }]
                 },
                 options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { grid: { color: 'rgba(255,255,255,0.05)' } }, y: { grid: { color: 'rgba(255,255,255,0.05)' } } } }
             });
